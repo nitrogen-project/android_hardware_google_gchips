@@ -29,6 +29,9 @@
 
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef enum _ExynosVideoInfoType {
     VIDEO_INFO_TYPE_INVALID         = 0,
     VIDEO_INFO_TYPE_HDR_STATIC      = 0x1 << 0,
@@ -125,5 +128,12 @@ typedef struct _ExynosVideoMeta {
 
     ExynosHdrDynamicInfo sHdrDynamicInfo;
 } ExynosVideoMeta;
+
+int Exynos_parsing_user_data_registered_itu_t_t35(ExynosHdrDynamicInfo *dest, void *src);
+int Exynos_dynamic_meta_to_itu_t_t35(ExynosHdrDynamicInfo *src, char *dst);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* VENDOR_VIDEO_API_H_ */

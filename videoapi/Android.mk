@@ -1,5 +1,4 @@
-#
-# Copyright (C) 2012 The Android Open Source Project
+# Copyright (C) 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,20 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-ifneq ($(filter gs101,$(TARGET_BOARD_PLATFORM)),)
+LOCAL_PATH:= $(call my-dir)
 
-common_hal_dirs := \
-	libexynosutils \
-	videoapi
+include $(CLEAR_VARS)
 
-ifeq ($(BOARD_USES_EXYNOS5_COMMON_GRALLOC), true)
-ifeq ($(BOARD_USES_EXYNOS_GRALLOC_VERSION), 3)
-common_hal_dirs += \
-    gralloc3
-endif
-endif
+LOCAL_MODULE_TAGS := optional
+LOCAL_PROPRIETARY_MODULE := true
 
-include $(call all-named-subdir-makefiles,$(common_hal_dirs))
-endif
+LOCAL_SRC_FILES := \
+	VendorVideoAPI.cpp
+
+LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/../include
+
+LOCAL_SHARED_LIBRARIES := \
+	liblog \
+	libutils
+
+LOCAL_MODULE := libVendorVideoApi
+
+LOCAL_PRELINK_MODULE := false
+LOCAL_ARM_MODE := arm
+
+LOCAL_CFLAGS += -Werror -Wno-unused-parameter -Wno-unused-function
+
+include $(BUILD_STATIC_LIBRARY)
