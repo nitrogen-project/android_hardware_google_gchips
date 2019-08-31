@@ -123,7 +123,7 @@ endif
 endif
 
 LOCAL_C_INCLUDES := $(MALI_LOCAL_PATH) $(MALI_DDK_INCLUDES) \
-    $(TOP)/hardware/samsung_slsi/exynos/include
+    $(TOP)/hardware/google/gchips/include
 
 # General compilation flags
 LOCAL_CFLAGS := -ldl -Werror -DLOG_TAG=\"gralloc\" -DPLATFORM_SDK_VERSION=$(PLATFORM_SDK_VERSION)
@@ -181,16 +181,16 @@ LOCAL_CFLAGS += -DBOARD_EXYNOS_S10B_FORMAT_ALIGN=16
 endif
 
 ifeq ($(shell expr $(GRALLOC_VERSION_MAJOR) \<= 1), 1)
-LOCAL_SHARED_LIBRARIES := libhardware liblog libcutils libGLESv1_CM libion_exynos libsync libutils
+LOCAL_SHARED_LIBRARIES := libhardware liblog libcutils libGLESv1_CM libion_google libsync libutils
 else ifeq ($(GRALLOC_VERSION_MAJOR), 2)
     ifeq ($(GRALLOC_MAPPER), 1)
-        LOCAL_SHARED_LIBRARIES := libhardware libhidlbase libhidltransport liblog libcutils libion_exynos libsync libutils
+        LOCAL_SHARED_LIBRARIES := libhardware libhidlbase libhidltransport liblog libcutils libion_google libsync libutils
         LOCAL_SHARED_LIBRARIES += android.hardware.graphics.mapper@2.0
         ifeq ($(HIDL_MAPPER_VERSION_SCALED), 210)
             LOCAL_SHARED_LIBRARIES += android.hardware.graphics.mapper@2.1
         endif
     else
-        LOCAL_SHARED_LIBRARIES := libhardware libhidlbase libhidltransport liblog libcutils libion_exynos libsync libutils
+        LOCAL_SHARED_LIBRARIES := libhardware libhidlbase libhidltransport liblog libcutils libion_google libsync libutils
         LOCAL_SHARED_LIBRARIES += android.hardware.graphics.allocator@2.0
         ifeq ($(HIDL_MAPPER_VERSION_SCALED), 210)
             LOCAL_SHARED_LIBRARIES += android.hardware.graphics.mapper@2.1
@@ -286,23 +286,3 @@ endif
 LOCAL_MODULE_OWNER := arm
 
 include $(BUILD_SHARED_LIBRARY)
-
-####################################################################################################
-#
-#include $(CLEAR_VARS)
-#
-#LOCAL_SHARED_LIBRARIES := liblog libcutils libutils android.hardware.graphics.allocator@2.0 android.hardware.graphics.mapper@2.0 \
-#	libsync libhardware libhidlbase libhidltransport
-#
-#LOCAL_C_INCLUDES := \
-#    $(TOP)/hardware/samsung_slsi/exynos/include
-#
-#LOCAL_SRC_FILES := 	\
-#	GrallocWrapper.cpp
-#
-#ifeq ($(BOARD_USES_VENDORIMAGE), true)
-#LOCAL_PROPRIETARY_MODULE := true
-#endif
-#LOCAL_MODULE := libGrallocWrapper
-#
-#include $(BUILD_SHARED_LIBRARY)
