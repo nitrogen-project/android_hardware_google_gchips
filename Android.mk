@@ -20,9 +20,9 @@ common_hal_dirs := \
 	libexynosutils
 
 ifeq ($(BOARD_USES_EXYNOS5_COMMON_GRALLOC), true)
-ifeq ($(BOARD_USES_EXYNOS_GRALLOC_VERSION), 1)
+ifeq ($(BOARD_USES_EXYNOS_GRALLOC_VERSION), 3)
 common_hal_dirs += \
-    gralloc1
+    gralloc3
 endif
 endif
 
