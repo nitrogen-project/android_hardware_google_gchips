@@ -20,9 +20,7 @@
 #include <assert.h>
 #include <atomic>
 
-#if GRALLOC_ARM_NO_EXTERNAL_AFBC == 0
 #include <cutils/properties.h>
-#endif
 
 #if GRALLOC_VERSION_MAJOR <= 1
 #include <hardware/hardware.h>
@@ -681,13 +679,24 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 	const int YUV_BT601_MAX_WIDTH = 1280;
 	const int YUV_BT601_MAX_HEIGHT = 720;
 
+	static char value[256];
+	int csc_prop;
+
+	property_get("ro.vendor.cscsupported", value, "0");
+	csc_prop = atoi(value);
+
 	if (gralloc_buffer_attr_map(hnd, true) < 0)
 	{
 		ALOGE("Failed to map attribute region.");
 		goto out;
 	}
 
-	if (formats[format_idx].is_yuv)
+	if (!csc_prop && formats[format_idx].is_yuv)
+	{
+		hnd->yuv_info = MALI_YUV_BT601_NARROW;
+		data_space = HAL_DATASPACE_STANDARD_BT601_625 | HAL_DATASPACE_RANGE_LIMITED;
+	}
+	else if (formats[format_idx].is_yuv)
 	{
 		/* Default YUV dataspace. */
 		color_space = HAL_DATASPACE_STANDARD_BT709;
@@ -1300,11 +1309,7 @@ int mali_gralloc_buffer_allocate(mali_gralloc_module *m, const gralloc_buffer_de
 		}
 
 #if GRALLOC_ARM_NO_EXTERNAL_AFBC == 0
-		static char value[256];
-		int afbc_prop;
-
-		property_get("ro.vendor.ddk.set.afbc", value, "0");
-		afbc_prop = atoi(value);
+		int afbc_prop = property_get_int32("ro.vendor.cscsupported", 0);
 
 		if (afbc_prop == 1 && hnd->alloc_format & MALI_GRALLOC_INTFMT_AFBC_BASIC)
 		{
