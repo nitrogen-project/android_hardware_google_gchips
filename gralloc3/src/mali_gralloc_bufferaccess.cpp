@@ -120,10 +120,10 @@ static int ion_map_for_lock(private_handle_t *hnd)
 				AWAR("AFBC buffer must not be mapped. handle(%p)", hnd);
 				break;
 			case 2:
-				if (hnd->flags & (private_handle_t::PRIV_FLAGS_USES_3PRIVATE_DATA | private_handle_t::PRIV_FLAGS_USES_3PRIVATE_DATA))
+				if (hnd->flags & (private_handle_t::PRIV_FLAGS_USES_3PRIVATE_DATA | private_handle_t::PRIV_FLAGS_USES_2PRIVATE_DATA))
 					break;
 
-				AWAR("Secure buffer must not be mapped. handle(%p)", hnd);
+				AWAR("Secure buffer with no video private data cannot be mapped. handle(%p)", hnd);
 				break;
 			case 3:
 				AWAR("HFR buffer cannot be mapped. handle(%p)", hnd);

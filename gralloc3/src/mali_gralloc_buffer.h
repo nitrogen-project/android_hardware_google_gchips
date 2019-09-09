@@ -278,7 +278,7 @@ struct private_handle_t
 
 	int     PRIVATE_1 = 0;
 	int     PRIVATE_2 = 0;
-	int     PRIVATE_3 = 0;
+	int     plane_count = 1;
 
 #ifdef __cplusplus
 	/*
@@ -317,6 +317,7 @@ struct private_handle_t
 	    , yuv_info(MALI_YUV_NO_INFO)
 	    , fb_fd(fb_file)
 	    , offset(fb_offset)
+	    , plane_count(1)
 	{
 		version = sizeof(native_handle);
 
@@ -341,7 +342,7 @@ struct private_handle_t
 			int _shared_fd, int _fd_yuv1, int _fd_yuv2,
 			int _req_format, uint64_t _internal_format, uint64_t _alloc_format,
 			int _width, int _height, int _backing_store_size, uint32_t _stride,
-			uint64_t _layer_count, plane_info_t _plane_info[MAX_PLANES], int _is_compressible)
+			uint64_t _layer_count, plane_info_t _plane_info[MAX_PLANES], int _is_compressible, int _plane_count)
 	    : share_fd(_shared_fd)
 	    , magic(sMagic)
 	    , flags(_flags)
@@ -368,6 +369,7 @@ struct private_handle_t
 	    , offset(0)
 	    , min_pgsz(_min_pgsz)
 	    , is_compressible(_is_compressible)
+	    , plane_count(_plane_count)
 	{
 		version = sizeof(native_handle);
 
@@ -414,7 +416,7 @@ struct private_handle_t
 				"stride(%d) byte_stride(%d) internal_wh(%d %d) "
 				"alloc_format(0x%" PRIx64 ") "
 				"size(%d %d %d) "
-				"layer_count(%d) "
+				"layer_count(%d) plane_count(%d)"
 				"bases(0x%" PRIx64 " 0x%" PRIx64 " 0x%" PRIx64 ") "
 				"\n",
 				str,
@@ -427,7 +429,7 @@ struct private_handle_t
 				stride, plane_info[0].byte_stride, plane_info[0].alloc_width, plane_info[0].alloc_height,
 				alloc_format,
 				sizes[0], sizes[1], sizes[2],
-				layer_count,
+				layer_count, plane_count,
 				bases[0], bases[1], bases[2]
 			);
 	}
@@ -454,7 +456,7 @@ struct private_handle_t
 	bool is_multi_plane() const
 	{
 		/* For multi-plane, the byte stride for the second plane will always be non-zero. */
-		return (plane_info[1].byte_stride != 0);
+		return plane_count > 1;
 	}
 
 	static private_handle_t *dynamicCast(const native_handle *in)

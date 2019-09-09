@@ -479,6 +479,31 @@ static int32_t mali_gralloc1_get_layer_count(gralloc1_device_t* device, buffer_h
 }
 #endif
 
+static int32_t mali_gralloc1_validate_buffer_size(gralloc1_device_t* device, buffer_handle_t buffer, const gralloc1_buffer_descriptor_info_t* descriptorInfo, uint32_t stride)
+{
+	GRALLOC_UNUSED(device);
+	GRALLOC_UNUSED(stride);
+	GRALLOC_UNUSED(descriptorInfo);
+
+	if (private_handle_t::validate(buffer) < 0)
+		return GRALLOC1_ERROR_BAD_HANDLE;
+
+	return GRALLOC1_ERROR_UNSUPPORTED;
+}
+
+static int32_t mali_gralloc1_get_transport_size(gralloc1_device_t* device, buffer_handle_t buffer, uint32_t *outNumFds, uint32_t *outNumInts)
+{
+	GRALLOC_UNUSED(device);
+
+	if (private_handle_t::validate(buffer) < 0)
+		return GRALLOC1_ERROR_BAD_HANDLE;
+
+	*outNumFds = buffer->numFds;
+	*outNumInts = buffer->numInts;
+
+	return GRALLOC1_ERROR_NONE;
+}
+
 static const mali_gralloc_func mali_gralloc_func_list[] = {
 	{ GRALLOC1_FUNCTION_DUMP, (gralloc1_function_pointer_t)mali_gralloc_dump },
 	{ GRALLOC1_FUNCTION_CREATE_DESCRIPTOR, (gralloc1_function_pointer_t)mali_gralloc_create_descriptor },
@@ -504,7 +529,8 @@ static const mali_gralloc_func mali_gralloc_func_list[] = {
 	{ GRALLOC1_FUNCTION_SET_LAYER_COUNT, (gralloc1_function_pointer_t)mali_gralloc1_set_layer_count },
 	{ GRALLOC1_FUNCTION_GET_LAYER_COUNT, (gralloc1_function_pointer_t)mali_gralloc1_get_layer_count },
 #endif
-
+	{ GRALLOC1_FUNCTION_VALIDATE_BUFFER_SIZE, (gralloc1_function_pointer_t)mali_gralloc1_validate_buffer_size },
+	{ GRALLOC1_FUNCTION_GET_TRANSPORT_SIZE, (gralloc1_function_pointer_t)mali_gralloc1_get_transport_size },
 	/* GRALLOC1_FUNCTION_INVALID has to be the last descriptor on the list. */
 	{ GRALLOC1_FUNCTION_INVALID, NULL }
 };

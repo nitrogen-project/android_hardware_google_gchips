@@ -84,17 +84,17 @@
 #define SBWC_10B_STRIDE(w)					(160 * (((w) + 31) / 32))
 #define SBWC_HEADER_STRIDE(w)				((((((w) + 63) / 64) + 15) / 16) * 16)
 
-#define SBWC_Y_VSTRIDE_BLOCKS(h)			((__ALIGN_UP((h), 8) + 3) / 4)
-#define SBWC_CBCR_VSTRIDE_BLOCKS(h)			(((__ALIGN_UP((h), 8) / 2) + 3) / 4)
+#define SBWC_Y_VSTRIDE_BLOCKS(h)			((__ALIGN_UP((h), 16) + 3) / 4)
+#define SBWC_CBCR_VSTRIDE_BLOCKS(h)			(((__ALIGN_UP((h), 16) / 2) + 3) / 4)
 
-#define SBWC_8B_Y_SIZE(w, h)				((SBWC_8B_STRIDE(w) * ((__ALIGN_UP((h), 8) + 3) / 4)) + 64)
-#define SBWC_8B_Y_HEADER_SIZE(w, h)			__ALIGN_UP(((SBWC_HEADER_STRIDE(w) * ((__ALIGN_UP((h), 8) + 3) / 4)) + 256), 32)
-#define SBWC_8B_CBCR_SIZE(w, h)				((SBWC_8B_STRIDE(w) * (((__ALIGN_UP((h), 8) / 2) + 3) / 4)) + 64)
-#define SBWC_8B_CBCR_HEADER_SIZE(w, h)		((SBWC_HEADER_STRIDE(w) * (((__ALIGN_UP((h), 8) / 2) + 3) / 4)) + 128)
+#define SBWC_8B_Y_SIZE(w, h)				((SBWC_8B_STRIDE(w) * ((__ALIGN_UP((h), 16) + 3) / 4)) + 64)
+#define SBWC_8B_Y_HEADER_SIZE(w, h)			__ALIGN_UP(((SBWC_HEADER_STRIDE(w) * ((__ALIGN_UP((h), 16) + 3) / 4)) + 256), 32)
+#define SBWC_8B_CBCR_SIZE(w, h)				((SBWC_8B_STRIDE(w) * (((__ALIGN_UP((h), 16) / 2) + 3) / 4)) + 64)
+#define SBWC_8B_CBCR_HEADER_SIZE(w, h)		((SBWC_HEADER_STRIDE(w) * (((__ALIGN_UP((h), 16) / 2) + 3) / 4)) + 128)
 
-#define SBWC_10B_Y_SIZE(w, h)				((SBWC_10B_STRIDE(w) * ((__ALIGN_UP((h), 8) + 3) / 4)) + 64)
+#define SBWC_10B_Y_SIZE(w, h)				((SBWC_10B_STRIDE(w) * ((__ALIGN_UP((h), 16) + 3) / 4)) + 64)
 #define SBWC_10B_Y_HEADER_SIZE(w, h)		__ALIGN_UP((((__ALIGN_UP((w), 16) * __ALIGN_UP((h), 16) * 2) + 256) - SBWC_10B_Y_SIZE(w, h)), 32)
-#define SBWC_10B_CBCR_SIZE(w, h)			((SBWC_10B_STRIDE(w) * (((__ALIGN_UP((h), 8) / 2) + 3) / 4)) + 64)
+#define SBWC_10B_CBCR_SIZE(w, h)			((SBWC_10B_STRIDE(w) * (((__ALIGN_UP((h), 16) / 2) + 3) / 4)) + 64)
 #define SBWC_10B_CBCR_HEADER_SIZE(w, h)		(((__ALIGN_UP((w), 16) * __ALIGN_UP((h), 16)) + 256) - SBWC_10B_CBCR_SIZE(w, h))
 
 /* SBWC Lossy align macros */

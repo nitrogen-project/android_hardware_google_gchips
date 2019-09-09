@@ -42,6 +42,8 @@
 /* for legacy */
 #define GRALLOC_USAGE_PRIVATE_NONSECURE                         GRALLOC1_PRODUCER_USAGE_PRIVATE_NONSECURE
 
+typedef int ion_user_handle_t;
+
 typedef enum
 {
 	/*

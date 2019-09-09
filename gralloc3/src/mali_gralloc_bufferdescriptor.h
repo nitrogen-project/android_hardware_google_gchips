@@ -56,6 +56,7 @@ typedef struct buffer_descriptor
 	int fd_count;
 	int alloc_video_private_data;
 	plane_info_t plane_info[MAX_PLANES];
+	int plane_count;
 
 #ifdef __cplusplus
 	buffer_descriptor() :
@@ -71,7 +72,9 @@ typedef struct buffer_descriptor
 	    internal_format(0),
 	    alloc_format(0),
 		fd_count(1),
-		alloc_video_private_data(0)
+		alloc_video_private_data(0),
+		plane_count(0)
+
 	{
 		sizes[0] = sizes[1] = sizes[2] = 0;
 		memset(plane_info, 0, sizeof(plane_info_t) * MAX_PLANES);
@@ -87,12 +90,12 @@ typedef struct buffer_descriptor
 				"layer_count(%u) sizes(%zu %zu %zu) "
 				"strde(%d) byte_stride(%d) alloc_wh(%d %d) "
 				"internal_format(0x%" PRIx64 ") alloc_format(0x%" PRIx64 ") "
-				"fd_count(%d) "
+				"fd_count(%d) plane_count(%d)"
 				"\n",
 				width, height, producer_usage, consumer_usage, hal_format,
 				layer_count, sizes[0], sizes[1], sizes[2],
 				pixel_stride, plane_info[0].byte_stride, plane_info[0].alloc_width, plane_info[0].alloc_height,
-				internal_format, alloc_format, fd_count
+				internal_format, alloc_format, fd_count, plane_count
 			);
 	}
 } buffer_descriptor_t;

@@ -504,15 +504,12 @@ static void calc_allocation_size(const int width,
 			uint16_t hw_align = 0;
 			if (has_hw_usage)
 			{
-				hw_align = format.is_yuv ? 128 : 64;
+				hw_align = format.is_yuv ? 16 : 64;
 			}
 
 			uint32_t cpu_align = 0;
-			if (has_cpu_usage)
-			{
-				assert((format.bpp[plane] * format.align_w_cpu) % 8 == 0);
-				cpu_align = (format.bpp[plane] * format.align_w_cpu) / 8;
-			}
+			assert((format.bpp[plane] * format.align_w_cpu) % 8 == 0);
+			cpu_align = (format.bpp[plane] * format.align_w_cpu) / 8;
 
 			uint32_t stride_align = lcm(hw_align, cpu_align);
 			if (stride_align)
@@ -525,6 +522,11 @@ static void calc_allocation_size(const int width,
 			 * Update YV12 stride with both CPU & HW usage due to constraint of chroma stride.
 			 * Width is anyway aligned to 16px for luma and chroma (has_cpu_usage).
 			 */
+			/*
+			 * This function can make yv12 align to 32 pixels or higher.
+			 * Some apps do not use the provided stride value when a buffer is created
+			 * Those apps may assume yv12 buffers are aligned to 32 pixels.
+			 * So do not call this function.
 			if (format.id == MALI_GRALLOC_FORMAT_INTERNAL_YV12 && has_hw_usage && has_cpu_usage)
 			{
 				update_yv12_stride(plane,
@@ -532,6 +534,7 @@ static void calc_allocation_size(const int width,
 				                   stride_align,
 				                   &plane_info[plane].byte_stride);
 			}
+			*/
 		}
 		ALOGV("Byte stride: %d", plane_info[plane].byte_stride);
 
@@ -1071,11 +1074,6 @@ static int prepare_descriptor_exynos_formats(buffer_descriptor_t *bufDescriptor)
 		bufDescriptor->plane_info[i].offset = 0;
 	}
 
-	if (is_multiplane && fd_count == 1)
-	{
-		bufDescriptor->plane_info[1].byte_stride = 1;
-	}
-
 	bufDescriptor->fd_count = fd_count;
 
 	return 0;
@@ -1176,6 +1174,8 @@ int mali_gralloc_derive_format_and_size(mali_gralloc_module *m,
 		                     bufDescriptor->plane_info);
 
 	}
+
+	bufDescriptor->plane_count = formats[format_idx].npln;
 
 	switch ((uint32_t)bufDescriptor->alloc_format)
 	{

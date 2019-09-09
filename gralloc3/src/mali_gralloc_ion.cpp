@@ -917,7 +917,7 @@ int mali_gralloc_ion_allocate(const gralloc_buffer_descriptor_t *descriptors,
 			    bufDescriptor->internal_format, bufDescriptor->alloc_format,
 			    bufDescriptor->width, bufDescriptor->height,
 			    max_bufDescriptor->size, bufDescriptor->pixel_stride, bufDescriptor->layer_count,
-				bufDescriptor->plane_info, is_compressible);
+				bufDescriptor->plane_info, is_compressible, bufDescriptor->plane_count);
 
 			if (NULL == hnd)
 			{
@@ -1019,7 +1019,7 @@ int mali_gralloc_ion_allocate(const gralloc_buffer_descriptor_t *descriptors,
 			    bufDescriptor->internal_format, bufDescriptor->alloc_format,
 			    bufDescriptor->width, bufDescriptor->height,
 			    bufDescriptor->size, bufDescriptor->pixel_stride, bufDescriptor->layer_count,
-				bufDescriptor->plane_info, is_compressible);
+				bufDescriptor->plane_info, is_compressible, bufDescriptor->plane_count);
 
 			if (NULL == hnd)
 			{
