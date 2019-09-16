@@ -22,6 +22,8 @@
 #include <linux/fb.h>
 #include <linux/ion.h>
 #include <hardware/gralloc1.h>
+#include <inttypes.h>
+#include <log/log.h>
 
 #define AFBC_INFO_SIZE                              (sizeof(int))
 #define AFBC_ENABLE                                 (0xafbc)
@@ -322,7 +324,7 @@ struct private_handle_t : public native_handle
 
 	int     PRIVATE_1 = 0;
 	int     PRIVATE_2 = 0;
-	int     PRIVATE_3 = 0;
+	int     plane_count = 0;
 
 	static int validate(const native_handle *h)
 	{
@@ -356,6 +358,37 @@ struct private_handle_t : public native_handle
 	int get_num_ion_fds() const
 	{
 		return numFds - 1;
+	}
+
+	void dump(const char *str) const
+	{
+		ALOGD("[%s] "
+				"fd(%d %d %d %d) "
+				"flags(%d) "
+				"wh(%d %d) "
+				"req_format(0x%x) "
+				"usage_pc(0x%" PRIx64 " 0x%" PRIx64 ") "
+				"format(0x%x) "
+				"interal_format(0x%" PRIx64 ") "
+				"stride(%d) byte_stride(%d) internal_wh(%d %d) "
+				"alloc_format(0x%" PRIx64 ") "
+				"size(%d %d %d) "
+				"layer_count(%d) plane_count(%d)"
+				"bases(0x%" PRIx64 " 0x%" PRIx64 " 0x%" PRIx64 ") "
+				"\n",
+				str,
+				fd, fd1, fd2, fd3,
+				flags,
+				width, height,
+				frameworkFormat,
+				producer_usage, consumer_usage,
+				format, internal_format,
+				stride, plane_info[0].byte_stride, plane_info[0].alloc_width, plane_info[0].alloc_height,
+				alloc_format,
+				size, size1, size2,
+				layer_count, plane_count,
+				bases[0], bases[1], bases[2]
+			);
 	}
 };
 
