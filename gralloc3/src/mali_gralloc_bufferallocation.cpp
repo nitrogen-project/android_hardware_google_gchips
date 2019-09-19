@@ -663,6 +663,31 @@ static bool validate_format(const format_info_t * const format,
 	return true;
 }
 
+static int color_space_for_dimensions(int width, int height) {
+	auto [sm, lg] = std::minmax(width, height);
+	int64_t area = static_cast<int64_t>(sm) * static_cast<int64_t>(lg);
+
+	if ((lg >= 3840) || (sm >= 3840) || (area >= (3840ll * 1634ll)))
+	{
+		return HAL_DATASPACE_STANDARD_BT2020;
+	}
+
+	if (lg <= 720)
+	{
+		if (sm <= 480)
+		{
+			return HAL_DATASPACE_STANDARD_BT601_525;
+		}
+
+		if (sm <= 576)
+		{
+			return HAL_DATASPACE_STANDARD_BT601_625;
+		}
+	}
+
+	return HAL_DATASPACE_STANDARD_BT709;
+}
+
 static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t format_idx)
 {
 	GRALLOC_UNUSED(usage);
@@ -672,12 +697,8 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 	int data_space = 0;
 	hnd->yuv_info = MALI_YUV_NO_INFO;
 	int rval = -1;
-
-	/* This resolution is the cut-off point at which BT709 is used (as default)
-	 * instead of BT601 for YUV formats < 10 bits.
-	 */
-	const int YUV_BT601_MAX_WIDTH = 1280;
-	const int YUV_BT601_MAX_HEIGHT = 720;
+	int width = hnd->width;
+	int height = hnd->height;
 
 	static char value[256];
 	int csc_prop;
@@ -708,12 +729,10 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 		if (formats[format_idx].bps >= 10)
 		{
 			color_space = HAL_DATASPACE_STANDARD_BT2020;
-			range = HAL_DATASPACE_RANGE_LIMITED;
 		}
-		else if (hnd->width < YUV_BT601_MAX_WIDTH || hnd->height < YUV_BT601_MAX_HEIGHT)
+		else
 		{
-			color_space = HAL_DATASPACE_STANDARD_BT601_625;
-			range = HAL_DATASPACE_RANGE_LIMITED;
+			color_space = color_space_for_dimensions(width, height);
 		}
 
 #if GRALLOC_VERSION_MAJOR >= 1
