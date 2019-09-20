@@ -773,6 +773,11 @@ static uint8_t is_format_supported(const int32_t fmt_idx,
 				f_flags &= ~F_AFBC;
 			}
 		}
+
+		if (usage & GRALLOC_USAGE_PROTECTED)
+		{
+			f_flags &= ~F_AFBC;
+		}
 	}
 
 	if (f_flags != F_NONE)
