@@ -690,8 +690,6 @@ static int color_space_for_dimensions(int width, int height) {
 
 static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t format_idx)
 {
-	GRALLOC_UNUSED(usage);
-
 	int color_space = HAL_DATASPACE_STANDARD_UNSPECIFIED;
 	int range = HAL_DATASPACE_RANGE_UNSPECIFIED;
 	int data_space = 0;
@@ -720,13 +718,35 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 	{
 		if (formats[format_idx].is_yuv)
 		{
+			color_space = HAL_DATASPACE_STANDARD_BT601_625;
+			range = HAL_DATASPACE_RANGE_LIMITED;
 			hnd->yuv_info = MALI_YUV_BT601_NARROW;
-			data_space = HAL_DATASPACE_STANDARD_BT601_625 | HAL_DATASPACE_RANGE_LIMITED;
+
+			/* Special cases for Camera producers */
+			switch (hnd->format)
+			{
+				case HAL_PIXEL_FORMAT_EXYNOS_YCrCb_420_SP_M:
+				case HAL_PIXEL_FORMAT_EXYNOS_YCrCb_420_SP_M_FULL:
+					if (usage & GRALLOC_USAGE_HW_CAMERA_WRITE)
+					{
+						range = HAL_DATASPACE_RANGE_FULL;
+						hnd->yuv_info = MALI_YUV_BT601_WIDE;
+					}
+			}
+
+			if (usage & GRALLOC1_CONSUMER_USAGE_YUV_RANGE_FULL)
+			{
+				range = HAL_DATASPACE_RANGE_FULL;
+				hnd->yuv_info = MALI_YUV_BT601_WIDE;
+			}
+
+			data_space = color_space | range;
 		}
 		else
 		{
 			data_space = HAL_DATASPACE_STANDARD_BT709 | HAL_DATASPACE_RANGE_FULL;
 		}
+
 		gralloc_buffer_attr_write(hnd, GRALLOC_ARM_BUFFER_ATTR_FORCE_DATASPACE, &data_space);
 	}
 	else if (formats[format_idx].is_yuv)
@@ -770,6 +790,23 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 		case MALI_GRALLOC_USAGE_RANGE_WIDE:
 			range = HAL_DATASPACE_RANGE_FULL;
 			break;
+		}
+
+		/* Special cases for Camera producers */
+		switch (hnd->format)
+		{
+			case HAL_PIXEL_FORMAT_EXYNOS_YCrCb_420_SP_M:
+			case HAL_PIXEL_FORMAT_EXYNOS_YCrCb_420_SP_M_FULL:
+				if (usage & GRALLOC_USAGE_HW_CAMERA_WRITE)
+				{
+					color_space = HAL_DATASPACE_STANDARD_BT601_625;
+					range = HAL_DATASPACE_RANGE_FULL;
+				}
+		}
+
+		if (usage & GRALLOC1_CONSUMER_USAGE_YUV_RANGE_FULL)
+		{
+			range = HAL_DATASPACE_RANGE_FULL;
 		}
 
 		data_space = color_space | range;
