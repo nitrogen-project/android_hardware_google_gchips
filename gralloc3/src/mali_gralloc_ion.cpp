@@ -48,7 +48,7 @@
 
 #include <hardware/exynos/ion.h>
 #include <hardware/exynos/dmabuf_container.h>
-#include "ion_uapi.h"
+#include <linux/ion.h>
 
 #define INIT_ZERO(obj) (memset(&(obj), 0, sizeof((obj))))
 
