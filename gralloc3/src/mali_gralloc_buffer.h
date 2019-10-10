@@ -203,7 +203,7 @@ struct private_handle_t
 	union
 	{
 		uint32_t format;
-		uint64_t internal_format;
+		uint64_t internal_format = 0;
 	};
 
 	/*
@@ -299,6 +299,7 @@ struct private_handle_t
 	    , flags(_flags)
 	    , width(0)
 	    , height(0)
+	    , req_format(0)
 	    , producer_usage(_producer_usage)
 	    , consumer_usage(_consumer_usage)
 	    , alloc_format(_alloc_format)
