@@ -184,6 +184,10 @@ ifeq ($(BOARD_USES_GRALLOC_ION_SYNC), true)
 LOCAL_CFLAGS += -DGRALLOC_ION_SYNC
 endif
 
+ifneq ($(BOARD_USES_EXYNOS_DATASPACE_FEATURE), true)
+LOCAL_CFLAGS += -DGRALLOC_NO_CSC_SUPPORTED
+endif
+
 ifeq ($(shell expr $(GRALLOC_VERSION_MAJOR) \<= 1), 1)
 LOCAL_SHARED_LIBRARIES := libhardware liblog libcutils libGLESv1_CM libion_google libsync libutils
 else ifeq ($(GRALLOC_VERSION_MAJOR), 2)

@@ -700,11 +700,15 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 	int width = hnd->width;
 	int height = hnd->height;
 
-	static char value[256];
-	int csc_prop;
+	static int csc_supported = -1;
 
-	property_get("ro.vendor.cscsupported", value, "0");
-	csc_prop = atoi(value);
+	if (csc_supported == -1)
+	{
+		csc_supported = property_get_int32("ro.vendor.cscsupported", 0);
+#ifdef GRALLOC_NO_CSC_SUPPORTED
+		csc_supported = 0;
+#endif
+	}
 
 	if (gralloc_buffer_attr_map(hnd, true) < 0)
 	{
@@ -712,10 +716,18 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 		goto out;
 	}
 
-	if (!csc_prop && formats[format_idx].is_yuv)
+	if (!csc_supported)
 	{
-		hnd->yuv_info = MALI_YUV_BT601_NARROW;
-		data_space = HAL_DATASPACE_STANDARD_BT601_625 | HAL_DATASPACE_RANGE_LIMITED;
+		if (formats[format_idx].is_yuv)
+		{
+			hnd->yuv_info = MALI_YUV_BT601_NARROW;
+			data_space = HAL_DATASPACE_STANDARD_BT601_625 | HAL_DATASPACE_RANGE_LIMITED;
+		}
+		else
+		{
+			data_space = HAL_DATASPACE_STANDARD_BT709 | HAL_DATASPACE_RANGE_FULL;
+		}
+		gralloc_buffer_attr_write(hnd, GRALLOC_ARM_BUFFER_ATTR_FORCE_DATASPACE, &data_space);
 	}
 	else if (formats[format_idx].is_yuv)
 	{

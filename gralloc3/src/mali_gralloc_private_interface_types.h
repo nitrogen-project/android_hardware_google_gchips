@@ -80,6 +80,14 @@ enum
 	/* Dataspace - used for YUV to RGB conversion. */
 	GRALLOC_ARM_BUFFER_ATTR_DATASPACE = 5,
 
+	/* Forced Dataspace - overrides ATTR_DATASPACE if not -1
+	 * Used to override dataspace used in GPU YUV->RGB conversion if dataspace support is
+	 * disabled in gralloc or system-wide.
+	 * Datspace support is disabled system-wide when ro.vendor.cscsupported == 0 or not set.
+	 * Otherwise remains as -1
+	 * */
+	GRALLOC_ARM_BUFFER_ATTR_FORCE_DATASPACE = 6,
+
 	GRALLOC_ARM_BUFFER_ATTR_LAST
 };
 
