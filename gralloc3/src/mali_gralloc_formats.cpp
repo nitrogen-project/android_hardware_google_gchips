@@ -1616,11 +1616,10 @@ uint64_t mali_gralloc_select_format(const uint64_t req_format,
 		goto out;
 	}
 
-	/* Reject if usage specified is outside white list of valid usages. */
+	/* Warn if usage specified is outside white list of valid usages. */
 	if (type != MALI_GRALLOC_FORMAT_TYPE_INTERNAL && (usage & (~VALID_USAGE)) != 0)
 	{
-		ALOGE("Invalid usage specified: 0x%" PRIx64, usage);
-		goto out;
+		ALOGW("Unknown usage specified: 0x%" PRIx64, usage);
 	}
 
 	/*
