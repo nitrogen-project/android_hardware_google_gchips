@@ -545,6 +545,7 @@ static int32_t mali_gralloc1_validate_buffer_size(gralloc1_device_t* device, buf
 	{
 		ALOGW("Stride mismatch. Expected stride = %d, Buffer stride = %d",
 		                       stride, gralloc_buffer->stride);
+		return GRALLOC1_ERROR_BAD_VALUE;
 	}
 
 	return GRALLOC1_ERROR_NONE;
