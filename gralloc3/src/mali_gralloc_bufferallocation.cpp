@@ -1267,9 +1267,6 @@ int mali_gralloc_derive_format_and_size(mali_gralloc_module *m,
 			// TODO: revert this back when b/152045385 is fixed.
 			bufDescriptor->pixel_stride = bufDescriptor->width * 5 / 4;
 			break;
-		case MALI_GRALLOC_FORMAT_INTERNAL_BLOB:
-			bufDescriptor->pixel_stride = bufDescriptor->width;
-			break;
 		default:
 			bufDescriptor->pixel_stride = bufDescriptor->plane_info[0].alloc_width;
 	}
