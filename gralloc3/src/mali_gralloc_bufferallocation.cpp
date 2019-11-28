@@ -502,7 +502,7 @@ static void calc_allocation_size(const int width,
 			uint16_t hw_align = 0;
 			if (has_hw_usage)
 			{
-				hw_align = format.is_yuv ? 16 : 64;
+				hw_align = format.is_yuv ? 16 : (format.is_rgb ? 64 : 0);
 			}
 
 			uint32_t cpu_align = 0;
