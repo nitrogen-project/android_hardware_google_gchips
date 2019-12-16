@@ -129,7 +129,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
     data = 0;
 
 
-    for (i = 0; i < windows; i++) {
+    for (i = 1; i < windows; i++) {
         /* window_upper_left_corner_x : 16bit */
         if (extraBit > 0)
             extraByte = 1;
@@ -148,7 +148,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.window_upper_left_corner_x[i] = data;
         data = 0;
 
@@ -171,7 +171,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.window_upper_left_corner_y[i] = data;
         data = 0;
 
@@ -194,7 +194,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.window_upper_right_corner_x[i] = data;
         data = 0;
 
@@ -217,7 +217,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.window_upper_right_corner_y[i] = data;
         data = 0;
 
@@ -240,7 +240,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.window_upper_right_corner_y[i] = data;
         data = 0;
 
@@ -263,7 +263,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.window_upper_right_corner_y[i] = data;
         data = 0;
 
@@ -286,7 +286,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 8;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.rotation_angle[i] = data;
         data = 0;
 
@@ -309,7 +309,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.semimajor_axis_internal_ellipse[i] = data;
         data = 0;
 
@@ -332,7 +332,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.semimajor_axis_external_ellipse[i] = data;
         data = 0;
 
@@ -355,7 +355,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 16;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.semiminor_axis_external_ellipse[i] = data;
         data = 0;
 
@@ -366,7 +366,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset  += 1;
         extraByte    = 0;
         extraBit     = bit_offset % 8;
-        data         = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.overlap_process_option[i] = data;
         data = 0;
     }
@@ -392,7 +392,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
     bit_offset += 27;
     extraByte   = 0;
     extraBit    = bit_offset % 8;
-    data        = data >> (8 - extraBit);
+    data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
     pHdr10PlusInfo->data.display_maximum_luminance = data;
     data = 0;
 
@@ -402,7 +402,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
 
     bit_offset  += 1;
     extraBit     = bit_offset % 8;
-    data         = data >> (8 - extraBit);
+    data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
     //pHdr10PlusInfo->data.targeted_system_display_actual_peak_luminance_flag = data;
     targeted_system_display_actual_peak_luminance_flag = data;
     data = 0;
@@ -427,7 +427,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 5;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.num_rows_targeted_system_display_actual_peak_luminance = data;
         num_rows_targeted_system_display_actual_peak_luminance = data;
         data = 0;
@@ -451,7 +451,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 5;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.num_cols_targeted_system_display_actual_peak_luminance = data;
         num_cols_targeted_system_display_actual_peak_luminance = data;
         data = 0;
@@ -477,7 +477,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
                 bit_offset += 4;
                 extraByte   = 0;
                 extraBit    = bit_offset % 8;
-                data        = data >> (8 - extraBit);
+                data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
                 //pHdr10PlusInfo->data.mastering_display_actual_peak_luminance = data;
                 data = 0;
             }
@@ -522,7 +522,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         }
         bit_offset += 17;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.average_maxrgb = data;
         data = 0;
 
@@ -547,7 +547,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 4;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         pHdr10PlusInfo->data.num_maxrgb_percentiles = data;
         data = 0;
 
@@ -571,7 +571,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
             bit_offset += 7;
             extraByte   = 0;
             extraBit    = bit_offset % 8;
-            data        = data >> (8 - extraBit);
+            data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
             pHdr10PlusInfo->data.maxrgb_percentages[j] = data;
             data = 0;
 
@@ -594,7 +594,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
             bit_offset += 17;
             extraByte   = 0;
             extraBit    = bit_offset % 8;
-            data        = data >> (8 - extraBit);
+            data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
             pHdr10PlusInfo->data.maxrgb_percentiles[j] = data;
             data = 0;
         }
@@ -620,7 +620,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 10;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.fraction_bright_pixels = data;
         data = 0;
     }
@@ -631,7 +631,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
 
     bit_offset  += 1;
     extraBit     = bit_offset % 8;
-    data         = data >> (8 - extraBit);
+    data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
     //pHdr10PlusInfo->data.mastering_display_actual_peak_luminance_flag = data;
     mastering_display_actual_peak_luminance_flag = data;
     data = 0;
@@ -656,7 +656,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 5;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.num_rows_mastering_display_actual_peak_luminance = data;
         num_rows_mastering_display_actual_peak_luminance = data;
         data = 0;
@@ -680,7 +680,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset += 5;
         extraByte   = 0;
         extraBit    = bit_offset % 8;
-        data        = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.num_cols_mastering_display_actual_peak_luminance = data;
         num_cols_mastering_display_actual_peak_luminance = data;
         data = 0;
@@ -706,7 +706,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
                 bit_offset += 4;
                 extraByte   = 0;
                 extraBit    = bit_offset % 8;
-                data        = data >> (8 - extraBit);
+                data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
                 //pHdr10PlusInfo->data.mastering_display_actual_peak_luminance = data;
                 data = 0;
             }
@@ -745,7 +745,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
             bit_offset += 12;
             extraByte   = 0;
             extraBit    = bit_offset % 8;
-            data        = data >> (8 - extraBit);
+            data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
             pHdr10PlusInfo->data.tone_mapping.knee_point_x = data;
             data = 0;
 
@@ -770,7 +770,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
             bit_offset += 12;
             extraByte   = 0;
             extraBit    = bit_offset % 8;
-            data        = data >> (8 - extraBit);
+            data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
             pHdr10PlusInfo->data.tone_mapping.knee_point_y = data;
             data = 0;
 
@@ -793,7 +793,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
             bit_offset += 4;
             extraByte   = 0;
             extraBit    = bit_offset % 8;
-            data        = data >> (8 - extraBit);
+            data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
             pHdr10PlusInfo->data.tone_mapping.num_bezier_curve_anchors = data;
             data = 0;
 
@@ -819,7 +819,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
                 bit_offset += 10;
                 extraByte   = 0;
                 extraBit    = bit_offset % 8;
-                data        = data >> (8 - extraBit);
+                data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
                 pHdr10PlusInfo->data.tone_mapping.bezier_curve_anchors[j] = data;
                 data = 0;
             }
@@ -832,7 +832,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
         bit_offset  += 1;
         extraByte    = 0;
         extraBit     = bit_offset % 8;
-        data         = data >> (8 - extraBit);
+        data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
         //pHdr10PlusInfo->data.color_saturation_mapping_flag = data;
         color_saturation_mapping_flag = data;
         data = 0;
@@ -857,7 +857,7 @@ int Exynos_parsing_user_data_registered_itu_t_t35 (
             bit_offset += 6;
             extraByte   = 0;
             extraBit    = bit_offset % 8;
-            data        = data >> (8 - extraBit);
+            data        = (extraBit != 0) ? (data >> (8 - extraBit)) : data;
             //pHdr10PlusInfo->color_saturation_weight = data;
             data = 0;
         }
@@ -969,49 +969,51 @@ int Exynos_dynamic_meta_to_itu_t_t35 (
     }
     extraBit = (bit_offset % 8);
 
-    /* window_upper_left_corner_x: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+    for (i = 1; i < 1 /* num_windows */; i++) {
+        /* window_upper_left_corner_x: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* window_upper_left_corner_y: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+        /* window_upper_left_corner_y: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* window_upper_right_corner_x: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+        /* window_upper_right_corner_x: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* window_upper_right_corner_y: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+        /* window_upper_right_corner_y: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* center_of_ellipse_x: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+        /* center_of_ellipse_x: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* center_of_ellipse_y: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+        /* center_of_ellipse_y: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* rotation_angle: 8bit */
-    bit_offset += 8;
-    extraBit = (bit_offset % 8);
+        /* rotation_angle: 8bit */
+        bit_offset += 8;
+        extraBit = (bit_offset % 8);
 
-    /* semimajor_axis_internal_ellipse: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+        /* semimajor_axis_internal_ellipse: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* semimajor_axis_external_ellipse: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+        /* semimajor_axis_external_ellipse: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* semiminor_axis_external_ellipse: 16bit */
-    bit_offset += 16;
-    extraBit = (bit_offset % 8);
+        /* semiminor_axis_external_ellipse: 16bit */
+        bit_offset += 16;
+        extraBit = (bit_offset % 8);
 
-    /* overlap_process_option: 1bit */
-    bit_offset += 1;
-    extraBit = (bit_offset % 8);
+        /* overlap_process_option: 1bit */
+        bit_offset += 1;
+        extraBit = (bit_offset % 8);
+    }
 
     /* targeted_system_display_maximum_luminance: 27bit */
     offset_limit = bit_offset + 27;
