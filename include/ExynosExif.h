@@ -190,8 +190,11 @@ typedef enum {
 #define EXIF_DEF_RESOLUTION_DEN     1
 #define EXIF_DEF_RESOLUTION_UNIT    2   /* inches */
 
+#define APP_MARKER_2                2
+#define APP_MARKER_3                3
 #define APP_MARKER_4                4
 #define APP_MARKER_5                5
+#define APP_MARKER_6                6
 
 typedef struct {
     uint32_t num;
@@ -282,4 +285,4 @@ typedef struct {
 bool UpdateDebugData(char *jpeg, size_t jpeglen, debug_attribute_t *debug);
 bool UpdateExif(char *jpeg, size_t jpeglen, exif_attribute_t *exif);
 
-#endif //USES_UNIVERSAL_LIBHWJPEG
+#endif /* __HARDWARE_EXYNOS_EXYNOS_EXIF_H__ */
