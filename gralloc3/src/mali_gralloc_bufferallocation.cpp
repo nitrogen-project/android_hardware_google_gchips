@@ -1181,10 +1181,17 @@ int mali_gralloc_derive_format_and_size(mali_gralloc_module *m,
 	{
 		case MALI_GRALLOC_FORMAT_INTERNAL_RAW12:
 		case MALI_GRALLOC_FORMAT_INTERNAL_RAW10:
-			bufDescriptor->pixel_stride = bufDescriptor->plane_info[0].byte_stride;
+			// RAW10 image width needs to be multiple of 16 so that the data can be CPU accessed
+			// in 32bit unit
+			if (bufDescriptor->width % 16 != 0) {
+				ALOGE("ERROR: Width for HAL_PIXEL_FORMAT_RAW10 buffers has to be multiple of 16.");
+				return -EINVAL;
+			}
+			// TODO: revert this back when b/152045385 is fixed.
+			bufDescriptor->pixel_stride = bufDescriptor->width * 5 / 4;
 			break;
 		case MALI_GRALLOC_FORMAT_INTERNAL_BLOB:
-			bufDescriptor->pixel_stride = 0;
+			bufDescriptor->pixel_stride = bufDescriptor->width;
 			break;
 		default:
 			bufDescriptor->pixel_stride = bufDescriptor->plane_info[0].alloc_width;
