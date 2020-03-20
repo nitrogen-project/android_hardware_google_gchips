@@ -1296,39 +1296,6 @@ int mali_gralloc_lock_flex_async(const mali_gralloc_module *m,
 		                      hnd->plane_info[0].byte_stride, 1, 1,
 		                      &flex_layout->planes[3]);
 		break;
-	case HAL_PIXEL_FORMAT_GOOGLE_NV21_SP:
-		flex_layout->format = FLEX_FORMAT_YCbCr;
-
-		set_flex_plane_params((uint8_t *)hnd->base, FLEX_COMPONENT_Y, 8, 8, 1,
-				      hnd->plane_info[0].byte_stride, 1, 1,
-				      &flex_layout->planes[0]);
-		set_flex_plane_params((uint8_t *)hnd->base + hnd->plane_info[1].offset + 1,
-				      FLEX_COMPONENT_Cb, 8, 8, 2,
-				      hnd->plane_info[1].byte_stride, 2, 2,
-				      &flex_layout->planes[1]);
-		set_flex_plane_params((uint8_t *)hnd->base + hnd->plane_info[1].offset,
-				      FLEX_COMPONENT_Cr, 8, 8, 2,
-				      hnd->plane_info[1].byte_stride, 2, 2,
-				      &flex_layout->planes[2]);
-		break;
-	case HAL_PIXEL_FORMAT_GOOGLE_NV21_SP_10B:
-		/* With Mapper2.0's default Gralloc1Hal, bits_per_component
-		 * is restricted to 8 bits.
-		 */
-		flex_layout->format = FLEX_FORMAT_YCbCr;
-
-		set_flex_plane_params((uint8_t *)hnd->base, FLEX_COMPONENT_Y, 8, 8, 1,
-				      hnd->plane_info[0].byte_stride, 1, 1,
-				      &flex_layout->planes[0]);
-		set_flex_plane_params((uint8_t *)hnd->base + hnd->plane_info[1].offset + 1,
-				      FLEX_COMPONENT_Cb, 8, 8, 2,
-				      hnd->plane_info[1].byte_stride, 2, 2,
-				      &flex_layout->planes[1]);
-		set_flex_plane_params((uint8_t *)hnd->base + hnd->plane_info[1].offset,
-				      FLEX_COMPONENT_Cr, 8, 8, 2,
-				      hnd->plane_info[1].byte_stride, 2, 2,
-				      &flex_layout->planes[2]);
-		break;
 	case HAL_PIXEL_FORMAT_GOOGLE_NV12_SP:
 		flex_layout->format = FLEX_FORMAT_YCbCr;
 
