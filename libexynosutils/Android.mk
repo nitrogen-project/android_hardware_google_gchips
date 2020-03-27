@@ -35,5 +35,5 @@ LOCAL_SRC_FILES += exynos_format_v4l2.c
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../include
 
-include $(TOP)/hardware/samsung_slsi/exynos/BoardConfigCFlags.mk
+include $(TOP)/hardware/google/gchips/BoardConfigCFlags.mk
 include $(BUILD_SHARED_LIBRARY)
