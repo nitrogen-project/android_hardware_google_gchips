@@ -37,6 +37,7 @@ struct attr_region
 	int use_sparse_alloc;
 	mali_hdr_info hdr_info;
 	android_dataspace_t dataspace;
+	android_dataspace_t force_dataspace;
 } __attribute__((packed));
 
 typedef struct attr_region attr_region;
@@ -171,6 +172,11 @@ static inline int gralloc_buffer_attr_write(struct private_handle_t *hnd, buf_at
 			region->dataspace = *((android_dataspace_t *)val);
 			rval = 0;
 			break;
+
+		case GRALLOC_ARM_BUFFER_ATTR_FORCE_DATASPACE:
+			region->force_dataspace = *((android_dataspace_t *)val);
+			rval = 0;
+			break;
 		}
 	}
 
@@ -215,6 +221,11 @@ static inline int gralloc_buffer_attr_read(struct private_handle_t *hnd, buf_att
 
 		case GRALLOC_ARM_BUFFER_ATTR_DATASPACE:
 			*val = region->dataspace;
+			rval = 0;
+			break;
+
+		case GRALLOC_ARM_BUFFER_ATTR_FORCE_DATASPACE:
+			*val = region->force_dataspace;
 			rval = 0;
 			break;
 		}

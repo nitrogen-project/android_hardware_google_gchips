@@ -502,7 +502,7 @@ static void calc_allocation_size(const int width,
 			uint16_t hw_align = 0;
 			if (has_hw_usage)
 			{
-				hw_align = format.is_yuv ? 16 : 64;
+				hw_align = format.is_yuv ? 16 : (format.is_rgb ? 64 : 0);
 			}
 
 			uint32_t cpu_align = 0;
@@ -690,8 +690,6 @@ static int color_space_for_dimensions(int width, int height) {
 
 static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t format_idx)
 {
-	GRALLOC_UNUSED(usage);
-
 	int color_space = HAL_DATASPACE_STANDARD_UNSPECIFIED;
 	int range = HAL_DATASPACE_RANGE_UNSPECIFIED;
 	int data_space = 0;
@@ -700,11 +698,15 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 	int width = hnd->width;
 	int height = hnd->height;
 
-	static char value[256];
-	int csc_prop;
+	static int csc_supported = -1;
 
-	property_get("ro.vendor.cscsupported", value, "0");
-	csc_prop = atoi(value);
+	if (csc_supported == -1)
+	{
+		csc_supported = property_get_int32("ro.vendor.cscsupported", 0);
+#ifdef GRALLOC_NO_CSC_SUPPORTED
+		csc_supported = 0;
+#endif
+	}
 
 	if (gralloc_buffer_attr_map(hnd, true) < 0)
 	{
@@ -712,10 +714,40 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 		goto out;
 	}
 
-	if (!csc_prop && formats[format_idx].is_yuv)
+	if (!csc_supported)
 	{
-		hnd->yuv_info = MALI_YUV_BT601_NARROW;
-		data_space = HAL_DATASPACE_STANDARD_BT601_625 | HAL_DATASPACE_RANGE_LIMITED;
+		if (formats[format_idx].is_yuv)
+		{
+			color_space = HAL_DATASPACE_STANDARD_BT601_625;
+			range = HAL_DATASPACE_RANGE_LIMITED;
+			hnd->yuv_info = MALI_YUV_BT601_NARROW;
+
+			/* Special cases for Camera producers */
+			switch (hnd->format)
+			{
+				case HAL_PIXEL_FORMAT_EXYNOS_YCrCb_420_SP_M:
+				case HAL_PIXEL_FORMAT_EXYNOS_YCrCb_420_SP_M_FULL:
+					if (usage & GRALLOC_USAGE_HW_CAMERA_WRITE)
+					{
+						range = HAL_DATASPACE_RANGE_FULL;
+						hnd->yuv_info = MALI_YUV_BT601_WIDE;
+					}
+			}
+
+			if (usage & GRALLOC1_CONSUMER_USAGE_YUV_RANGE_FULL)
+			{
+				range = HAL_DATASPACE_RANGE_FULL;
+				hnd->yuv_info = MALI_YUV_BT601_WIDE;
+			}
+
+			data_space = color_space | range;
+		}
+		else
+		{
+			data_space = HAL_DATASPACE_STANDARD_BT709 | HAL_DATASPACE_RANGE_FULL;
+		}
+
+		gralloc_buffer_attr_write(hnd, GRALLOC_ARM_BUFFER_ATTR_FORCE_DATASPACE, &data_space);
 	}
 	else if (formats[format_idx].is_yuv)
 	{
@@ -758,6 +790,23 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 		case MALI_GRALLOC_USAGE_RANGE_WIDE:
 			range = HAL_DATASPACE_RANGE_FULL;
 			break;
+		}
+
+		/* Special cases for Camera producers */
+		switch (hnd->format)
+		{
+			case HAL_PIXEL_FORMAT_EXYNOS_YCrCb_420_SP_M:
+			case HAL_PIXEL_FORMAT_EXYNOS_YCrCb_420_SP_M_FULL:
+				if (usage & GRALLOC_USAGE_HW_CAMERA_WRITE)
+				{
+					color_space = HAL_DATASPACE_STANDARD_BT601_625;
+					range = HAL_DATASPACE_RANGE_FULL;
+				}
+		}
+
+		if (usage & GRALLOC1_CONSUMER_USAGE_YUV_RANGE_FULL)
+		{
+			range = HAL_DATASPACE_RANGE_FULL;
 		}
 
 		data_space = color_space | range;
@@ -959,6 +1008,7 @@ static int prepare_descriptor_exynos_formats(buffer_descriptor_t *bufDescriptor)
 				stride = w;
 				byte_stride = stride;
 				luma_size = PLANE_SIZE(stride , h * 3 / 2, ext_size);
+				luma_vstride = h;
 				fd_count = 1;
 				break;
 			}
@@ -1088,7 +1138,7 @@ static int prepare_descriptor_exynos_formats(buffer_descriptor_t *bufDescriptor)
 
 	for (int i = 0; i < fd_count; i++)
 	{
-		size_t alloc_height = i == 0 ? luma_vstride : luma_vstride / 2;
+		size_t alloc_height = i == 0 ? luma_vstride : (luma_vstride / 2);
 		size_t size = i == 0 ? luma_size : chroma_size;
 
 #ifdef GRALLOC_MSCL_ALLOC_RESTRICTION
@@ -1217,9 +1267,6 @@ int mali_gralloc_derive_format_and_size(mali_gralloc_module *m,
 			}
 			// TODO: revert this back when b/152045385 is fixed.
 			bufDescriptor->pixel_stride = bufDescriptor->width * 5 / 4;
-			break;
-		case MALI_GRALLOC_FORMAT_INTERNAL_BLOB:
-			bufDescriptor->pixel_stride = bufDescriptor->width;
 			break;
 		default:
 			bufDescriptor->pixel_stride = bufDescriptor->plane_info[0].alloc_width;

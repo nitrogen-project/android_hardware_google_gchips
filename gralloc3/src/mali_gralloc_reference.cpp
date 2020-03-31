@@ -66,12 +66,14 @@ int mali_gralloc_reference_retain(mali_gralloc_module const *module, buffer_hand
 	else if (hnd->flags & (private_handle_t::PRIV_FLAGS_USES_ION))
 	{
 		retval = mali_gralloc_ion_map(hnd);
+#if GRALLOC_ION_HANDLE_IMPORT == 1
 		if (retval >= 0)
 		{
 			/* failing to import ion handle is not fatal */
 			import_exynos_ion_handles(hnd);
 			retval = 0;
 		}
+#endif
 	}
 	else
 	{
@@ -117,7 +119,9 @@ int mali_gralloc_reference_release(mali_gralloc_module const *module, buffer_han
 				mali_gralloc_dump_buffer_erase(hnd);
 			}
 
+#if GRALLOC_ION_HANDLE_IMPORT == 1
 			free_exynos_ion_handles(hnd);
+#endif
 			mali_gralloc_buffer_free(handle);
 			delete handle;
 		}
@@ -132,13 +136,16 @@ int mali_gralloc_reference_release(mali_gralloc_module const *module, buffer_han
 			if (hnd->flags & (private_handle_t::PRIV_FLAGS_USES_ION))
 			{
 				mali_gralloc_ion_unmap(hnd);
+#if GRALLOC_ION_HANDLE_IMPORT == 1
 				free_exynos_ion_handles(hnd);
+#endif
 			}
 			else
 			{
 				AERR("Unregistering/Releasing unknown buffer is not supported. Flags = %d", hnd->flags);
 			}
 
+#if GRALLOC_USE_ASHMEM_METADATA != 1
 			/*
 			 * Close shared attribute region file descriptor. It might seem strange to "free"
 			 * this here since this can happen in a client process, but free here is nothing
@@ -147,6 +154,7 @@ int mali_gralloc_reference_release(mali_gralloc_module const *module, buffer_han
 			 * of gralloc buffers within the same process should have fds dup:ed.
 			 */
 			gralloc_buffer_attr_free(hnd);
+#endif
 
 			hnd->base = 0;
 		}

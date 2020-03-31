@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 
+#if GRALLOC_USE_ASHMEM_METADATA == 1
 #include <cutils/ashmem.h>
+#else
+#include "mali_gralloc_ion.h"
+#endif
+
 #include <log/log.h>
 #include <sys/mman.h>
 
@@ -54,7 +59,11 @@ int gralloc_buffer_attr_allocate(private_handle_t *hnd)
 		close(share_attr_fd);
 	}
 
+#if GRALLOC_USE_ASHMEM_METADATA == 1
 	share_attr_fd = ashmem_create_region("gralloc_shared_attr", PAGE_SIZE);
+#else
+	share_attr_fd = alloc_metadata();
+#endif
 
 	if (share_attr_fd < 0)
 	{
@@ -137,7 +146,8 @@ int gralloc_buffer_attr_free(private_handle_t *hnd)
 
 	if (hnd->attr_base != MAP_FAILED)
 	{
-		ALOGW("Warning shared attribute region mapped at free. Unmapping");
+		AWAR("Warning shared attribute region mapped at free. Unmapping on pid(%d) tid(%d)", getpid(), gettid());
+		hnd->dump(__FUNCTION__);
 		munmap(hnd->attr_base, PAGE_SIZE);
 		hnd->attr_base = MAP_FAILED;
 	}

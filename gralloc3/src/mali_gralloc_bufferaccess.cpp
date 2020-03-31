@@ -74,6 +74,13 @@ static enum tx_direction get_tx_direction(const uint64_t usage)
 static void buffer_sync(private_handle_t * const hnd,
                         const enum tx_direction direction)
 {
+	const uint64_t usage = hnd->producer_usage | hnd->consumer_usage;
+
+	if ((usage & (GRALLOC_USAGE_SW_READ_MASK | GRALLOC_USAGE_SW_WRITE_MASK)) == 0)
+	{
+		return;
+	}
+
 	if (hnd->flags & private_handle_t::PRIV_FLAGS_USES_ION)
 	{
 		if (direction != TX_NONE)
@@ -120,10 +127,10 @@ static int ion_map_for_lock(private_handle_t *hnd)
 				AWAR("AFBC buffer must not be mapped. handle(%p)", hnd);
 				break;
 			case 2:
-				if (hnd->flags & (private_handle_t::PRIV_FLAGS_USES_3PRIVATE_DATA | private_handle_t::PRIV_FLAGS_USES_2PRIVATE_DATA))
-					break;
-
-				AWAR("Secure buffer with no video private data cannot be mapped. handle(%p)", hnd);
+				if (!(hnd->flags & (private_handle_t::PRIV_FLAGS_USES_3PRIVATE_DATA | private_handle_t::PRIV_FLAGS_USES_2PRIVATE_DATA)))
+				{
+					AWAR("Secure buffer with no video private data cannot be mapped. handle(%p)", hnd);
+				}
 				break;
 			case 3:
 				AWAR("HFR buffer cannot be mapped. handle(%p)", hnd);
@@ -312,13 +319,23 @@ int mali_gralloc_lock(const mali_gralloc_module * const m, buffer_handle_t buffe
 
 	if (formats[format_idx].is_yuv == true)
 	{
+		switch (formats[format_idx].id)
+		{
+			case HAL_PIXEL_FORMAT_YCbCr_422_I:
+			case HAL_PIXEL_FORMAT_Y8:
+			case HAL_PIXEL_FORMAT_Y16:
+			case HAL_PIXEL_FORMAT_YV12:
+				break;
+			default:
 #if GRALLOC_VERSION_MAJOR == 0
-		AWAR("Buffers with YUV compatible formats should be locked using "
-		     "(*lock_ycbcr). Requested format is:0x%x", hnd->req_format);
+				AWAR("Buffers with YUV compatible formats should be locked using "
+				     "(*lock_ycbcr). Requested format is:0x%x", hnd->req_format);
 #elif GRALLOC_VERSION_MAJOR == 1
-		AWAR("Buffers with YUV compatible formats should be locked using "
-		     "GRALLOC1_FUNCTION_LOCK_FLEX. Requested format is:0x%x", hnd->req_format);
+				AWAR("Buffers with YUV compatible formats should be locked using "
+				     "GRALLOC1_FUNCTION_LOCK_FLEX. Requested format is:0x%x", hnd->req_format);
 #endif
+				break;
+		}
 	}
 
 	/* Populate CPU-accessible pointer when requested for CPU usage */

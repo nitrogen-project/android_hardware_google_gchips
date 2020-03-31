@@ -1563,7 +1563,7 @@ uint32_t get_base_format(const uint64_t req_format,
 	}
 	else if (req_format == HAL_PIXEL_FORMAT_YCbCr_420_888)
 	{
-		if (usage & GRALLOC1_CONSUMER_USAGE_VIDEO_ENCODER)
+		if (usage & (GRALLOC1_CONSUMER_USAGE_VIDEO_ENCODER | GRALLOC1_PRODUCER_USAGE_GPU_RENDER_TARGET))
 		{
 			base_format = HAL_PIXEL_FORMAT_EXYNOS_YCbCr_420_SP_M;
 		}
@@ -1621,11 +1621,10 @@ uint64_t mali_gralloc_select_format(const uint64_t req_format,
 		goto out;
 	}
 
-	/* Reject if usage specified is outside white list of valid usages. */
+	/* Warn if usage specified is outside white list of valid usages. */
 	if (type != MALI_GRALLOC_FORMAT_TYPE_INTERNAL && (usage & (~VALID_USAGE)) != 0)
 	{
-		ALOGE("Invalid usage specified: 0x%" PRIx64, usage);
-		goto out;
+		ALOGW("Unknown usage specified: 0x%" PRIx64, usage);
 	}
 
 	/*
