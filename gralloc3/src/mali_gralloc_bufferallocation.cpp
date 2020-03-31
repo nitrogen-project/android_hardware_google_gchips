@@ -20,9 +20,7 @@
 #include <assert.h>
 #include <atomic>
 
-#if GRALLOC_ARM_NO_EXTERNAL_AFBC == 0
 #include <cutils/properties.h>
-#endif
 
 #if GRALLOC_VERSION_MAJOR <= 1
 #include <hardware/hardware.h>
@@ -665,6 +663,31 @@ static bool validate_format(const format_info_t * const format,
 	return true;
 }
 
+static int color_space_for_dimensions(int width, int height) {
+	auto [sm, lg] = std::minmax(width, height);
+	int64_t area = static_cast<int64_t>(sm) * static_cast<int64_t>(lg);
+
+	if ((lg >= 3840) || (sm >= 3840) || (area >= (3840ll * 1634ll)))
+	{
+		return HAL_DATASPACE_STANDARD_BT2020;
+	}
+
+	if (lg <= 720)
+	{
+		if (sm <= 480)
+		{
+			return HAL_DATASPACE_STANDARD_BT601_525;
+		}
+
+		if (sm <= 576)
+		{
+			return HAL_DATASPACE_STANDARD_BT601_625;
+		}
+	}
+
+	return HAL_DATASPACE_STANDARD_BT709;
+}
+
 static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t format_idx)
 {
 	GRALLOC_UNUSED(usage);
@@ -674,12 +697,14 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 	int data_space = 0;
 	hnd->yuv_info = MALI_YUV_NO_INFO;
 	int rval = -1;
+	int width = hnd->width;
+	int height = hnd->height;
 
-	/* This resolution is the cut-off point at which BT709 is used (as default)
-	 * instead of BT601 for YUV formats < 10 bits.
-	 */
-	const int YUV_BT601_MAX_WIDTH = 1280;
-	const int YUV_BT601_MAX_HEIGHT = 720;
+	static char value[256];
+	int csc_prop;
+
+	property_get("ro.vendor.cscsupported", value, "0");
+	csc_prop = atoi(value);
 
 	if (gralloc_buffer_attr_map(hnd, true) < 0)
 	{
@@ -687,7 +712,12 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 		goto out;
 	}
 
-	if (formats[format_idx].is_yuv)
+	if (!csc_prop && formats[format_idx].is_yuv)
+	{
+		hnd->yuv_info = MALI_YUV_BT601_NARROW;
+		data_space = HAL_DATASPACE_STANDARD_BT601_625 | HAL_DATASPACE_RANGE_LIMITED;
+	}
+	else if (formats[format_idx].is_yuv)
 	{
 		/* Default YUV dataspace. */
 		color_space = HAL_DATASPACE_STANDARD_BT709;
@@ -699,12 +729,10 @@ static int set_dataspace(private_handle_t * const hnd, uint64_t usage, int32_t f
 		if (formats[format_idx].bps >= 10)
 		{
 			color_space = HAL_DATASPACE_STANDARD_BT2020;
-			range = HAL_DATASPACE_RANGE_LIMITED;
 		}
-		else if (hnd->width < YUV_BT601_MAX_WIDTH || hnd->height < YUV_BT601_MAX_HEIGHT)
+		else
 		{
-			color_space = HAL_DATASPACE_STANDARD_BT601_625;
-			range = HAL_DATASPACE_RANGE_LIMITED;
+			color_space = color_space_for_dimensions(width, height);
 		}
 
 #if GRALLOC_VERSION_MAJOR >= 1
@@ -1300,11 +1328,7 @@ int mali_gralloc_buffer_allocate(mali_gralloc_module *m, const gralloc_buffer_de
 		}
 
 #if GRALLOC_ARM_NO_EXTERNAL_AFBC == 0
-		static char value[256];
-		int afbc_prop;
-
-		property_get("ro.vendor.ddk.set.afbc", value, "0");
-		afbc_prop = atoi(value);
+		int afbc_prop = property_get_int32("ro.vendor.cscsupported", 0);
 
 		if (afbc_prop == 1 && hnd->alloc_format & MALI_GRALLOC_INTFMT_AFBC_BASIC)
 		{
