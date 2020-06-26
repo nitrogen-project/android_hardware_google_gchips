@@ -1031,14 +1031,8 @@ static void get_active_caps(const format_info_t format,
 	uint64_t consumer_mask = ~0;
 	bool afbc_allowed = false;
 
+        GRALLOC_UNUSED(format);
 	GRALLOC_UNUSED(producers);
-
-	if (format.is_yuv)
-	{
-		/* AFBC wide-block is not supported across IP for YUV formats. */
-		producer_mask &= ~MALI_GRALLOC_FORMAT_CAPABILITY_AFBC_WIDEBLK;
-		consumer_mask &= ~MALI_GRALLOC_FORMAT_CAPABILITY_AFBC_WIDEBLK;
-	}
 
 	afbc_allowed = buffer_size > (192 * 192);
 
