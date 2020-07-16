@@ -975,14 +975,8 @@ static uint64_t get_afbc_format(const uint32_t base_format,
 			 * Specific producer/consumer combinations benefit from additional
 			 * AFBC features (e.g. GPU --> DPU).
 			 */
-			if (producer & MALI_GRALLOC_PRODUCER_GPU && consumer & MALI_GRALLOC_CONSUMER_DPU)
+			if (consumer & MALI_GRALLOC_CONSUMER_GPU)
 			{
-				if (producer_caps & MALI_GRALLOC_FORMAT_CAPABILITY_AFBC_SPLITBLK &&
-				    consumer_caps & MALI_GRALLOC_FORMAT_CAPABILITY_AFBC_SPLITBLK)
-				{
-					alloc_format |= MALI_GRALLOC_INTFMT_AFBC_SPLITBLK;
-				}
-
 				/*
 				 * NOTE: assume that all AFBC layers are pre-rotated. 16x16 SB
 				 * must be used with DPU consumer when rotation is required.
