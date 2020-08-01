@@ -93,7 +93,6 @@ int gralloc_buffer_attr_allocate(private_handle_t *hnd)
 		 * not-initialized values.
 		 */
 		attr_region *region = (attr_region *)hnd->attr_base;
-		GRALLOC_UNUSED(region);
 
 		memset(hnd->attr_base, 0xff, PAGE_SIZE);
 		munmap(hnd->attr_base, PAGE_SIZE);
