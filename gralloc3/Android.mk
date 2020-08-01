@@ -59,13 +59,9 @@ endif
 ####################################################################################################
 
 include $(CLEAR_VARS)
-include $(TOP_LOCAL_PATH)/gralloc.version.mk
 
 LOCAL_SHARED_LIBRARIES := liblog libcutils libutils android.hardware.graphics.allocator@2.0 android.hardware.graphics.mapper@2.0 \
-    libsync libhardware libhidlbase libhidltransport libnativewindow libion_google
-
-LOCAL_STATIC_LIBRARIES := libarect
-LOCAL_HEADER_LIBRARIES := libnativebase_headers
+    libsync libhardware libhidlbase libhidltransport
 
 LOCAL_C_INCLUDES := \
     $(TOP)/hardware/google/gchips/include \
@@ -73,23 +69,7 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_SRC_FILES := 	\
     GrallocWrapper.cpp \
-    gralloc_vendor_interface.cpp \
-    mali_gralloc_ion.cpp \
-    gralloc_buffer_priv.cpp \
-    format_info.cpp
-
-# TODO(find out why setting this to $(HIDL_MAPPER_VERSION_SCALED) doesn't work)
-LOCAL_CFLAGS := -DHIDL_MAPPER_VERSION_SCALED=200
-LOCAL_CFLAGS += -DGRALLOC_VERSION_MAJOR=$(GRALLOC_VERSION_MAJOR)
-LOCAL_CFLAGS += -DGRALLOC_HFR_BATCH_SIZE=8
-
-MALI_GRALLOC_GPU_LIBRARY_64_PATH1 := \"/vendor/lib64/egl/\"
-MALI_GRALLOC_GPU_LIBRARY_64_PATH2 := \"/system/lib64/egl/\"
-MALI_GRALLOC_GPU_LIBRARY_32_PATH1 := \"/vendor/lib/egl/\"
-LOCAL_CFLAGS_arm64 += -DMALI_GRALLOC_GPU_LIBRARY_PATH1=$(MALI_GRALLOC_GPU_LIBRARY_64_PATH1)
-LOCAL_CFLAGS_arm64 += -DMALI_GRALLOC_GPU_LIBRARY_PATH2=$(MALI_GRALLOC_GPU_LIBRARY_64_PATH2)
-LOCAL_CFLAGS_arm += -DMALI_GRALLOC_GPU_LIBRARY_PATH1=$(MALI_GRALLOC_GPU_LIBRARY_32_PATH1)
-LOCAL_CFLAGS_arm += -DMALI_GRALLOC_GPU_LIBRARY_PATH2=$(MALI_GRALLOC_GPU_LIBRARY_64_PATH2)
+    gralloc_public_interface.cpp
 
 ifeq ($(BOARD_USES_VENDORIMAGE), true)
 LOCAL_PROPRIETARY_MODULE := true
