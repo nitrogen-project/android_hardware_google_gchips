@@ -144,17 +144,6 @@ public:
 
 typedef class android::GraphicBufferAllocator VendorGraphicBufferAllocator;
 
-
-/* libion helper for use by OMX only */
-namespace ion {
-
-typedef int ion_user_handle_t;
-
-int get_ion_fd();
-
-} /* namespace ion */
-
-
 } /* namespace graphics */
 } /* namespace vendor */
 

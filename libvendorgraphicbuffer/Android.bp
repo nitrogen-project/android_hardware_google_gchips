@@ -15,16 +15,55 @@
  * limitations under the License.
  */
 
+soong_config_module_type {
+	name: "vendorgraphicbuffer_cc_defaults",
+	module_type: "cc_defaults",
+	config_namespace: "vendorgraphicbuffer",
+	variables: [
+		"gralloc_version",
+	],
+	properties: [
+		"srcs", "include_dirs", "cflags",
+	],
+}
+
+soong_config_string_variable {
+	name: "gralloc_version",
+	values: ["three", "four"],
+}
+
+vendorgraphicbuffer_cc_defaults {
+	name: "vendorgraphicbuffer_defaults",
+	soong_config_variables: {
+		gralloc_version: {
+			three: {
+				include_dirs: [
+					"hardware/google/gchips/gralloc3/src",
+					"hardware/google/gchips/include",
+				],
+				srcs: [
+					"gralloc3/vendor_graphicbuffer_mapper.cpp",
+					"gralloc3/vendor_graphicbuffer_meta.cpp",
+				],
+			},
+			four: {
+				include_dirs: [
+					"hardware/google/gchips/gralloc4/src",
+					"hardware/google/gchips/include",
+				],
+				srcs: [
+					"gralloc4/vendor_graphicbuffer_mapper.cpp",
+					"gralloc4/vendor_graphicbuffer_meta.cpp",
+				],
+			},
+		},
+	},
+}
+
 cc_library_shared {
 	name: "libvendorgraphicbuffer",
-	include_dirs: [
-		"hardware/google/gchips/libvendorgraphicbuffer/include",
-		"hardware/google/gchips/gralloc3/src",
-		"hardware/google/gchips/include",
-	],
-	srcs: [
-		"gralloc3/vendor_graphicbuffer_mapper.cpp",
-		"gralloc3/vendor_graphicbuffer_meta.cpp",
+	defaults: [
+		"vendorgraphicbuffer_defaults",
 	],
 	shared_libs: [
 		"libcutils",
