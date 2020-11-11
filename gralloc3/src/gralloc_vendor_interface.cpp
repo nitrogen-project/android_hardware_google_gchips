@@ -108,6 +108,8 @@ buffer_handle_t createNativeHandle(const Descriptor &descriptor) {
         .alloc_height = buffer_descriptor.height,
     };
 
+    mali_gralloc_derive_format_and_size(nullptr, &buffer_descriptor);
+
     const gralloc_buffer_descriptor_t gralloc_buffer_descriptor =
         reinterpret_cast<const gralloc_buffer_descriptor_t>(&buffer_descriptor);
 
