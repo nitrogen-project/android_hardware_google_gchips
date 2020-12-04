@@ -339,8 +339,6 @@ int ion_device::alloc_from_ion_heap(uint64_t usage, size_t size, unsigned int fl
 
 int ion_device::open_and_query_ion()
 {
-	int ret = -1;
-
 	if (ion_client >= 0)
 	{
 		MALI_GRALLOC_LOGW("ION device already open");
@@ -362,41 +360,12 @@ static int mali_gralloc_ion_sync(const private_handle_t * const hnd,
                                        const bool /* write */,
                                        const bool /* start */)
 {
-	int ret = 0;
-
 	if (hnd == NULL)
 	{
 		return -EINVAL;
 	}
 
 	return 0;
-#if defined(GRALLOC_ION_SYNC_ON_LOCK) && GRALLOC_ION_SYNC_ON_LOCK == 1
-	ion_device *dev = ion_device::get();
-	int direction = 0;
-
-	if (read)
-	{
-		direction |= ION_SYNC_READ;
-	}
-	if (write)
-	{
-		direction |= ION_SYNC_WRITE;
-	}
-
-	for (int idx = 0; idx < hnd->fd_count; idx++)
-	{
-		if (start)
-		{
-			ret |= exynos_ion_sync_start(dev->client(), hnd->fds[idx], direction);
-		}
-		else
-		{
-			ret |= exynos_ion_sync_end(dev->client(), hnd->fds[idx], direction);
-		}
-	}
-
-	return ret;
-#endif
 }
 
 
@@ -599,11 +568,9 @@ int mali_gralloc_ion_allocate(const gralloc_buffer_descriptor_t *descriptors,
 {
 	GRALLOC_UNUSED(shared_backend);
 
-	static int support_protected = 1;
 	unsigned int priv_heap_flag = 0;
-	unsigned char *cpu_ptr = NULL;
 	uint64_t usage;
-	uint32_t i, max_buffer_index = 0;
+	uint32_t i;
 	unsigned int ion_flags = 0;
 	int min_pgsz = 0;
 	int fds[5] = {-1, -1, -1, -1, -1};
@@ -683,6 +650,7 @@ int mali_gralloc_ion_allocate(const gralloc_buffer_descriptor_t *descriptors,
 	}
 
 #if defined(GRALLOC_INIT_AFBC) && (GRALLOC_INIT_AFBC == 1)
+	unsigned char *cpu_ptr = NULL;
 	for (i = 0; i < numDescriptors; i++)
 	{
 		buffer_descriptor_t *bufDescriptor = (buffer_descriptor_t *)(descriptors[i]);
@@ -830,7 +798,6 @@ void mali_gralloc_ion_unmap(private_handle_t *hnd)
 	for (int i = 0; i < hnd->fd_count; i++)
 	{
 		int err = 0;
-		plane_info_t *plane = &hnd->plane_info[i];
 
 		if (hnd->bases[i])
 		{
