@@ -990,7 +990,8 @@ int mali_gralloc_derive_format_and_size(buffer_descriptor_t * const bufDescripto
 
 
 int mali_gralloc_buffer_allocate(const gralloc_buffer_descriptor_t *descriptors,
-                                 uint32_t numDescriptors, buffer_handle_t *pHandle, bool *shared_backend)
+                                 uint32_t numDescriptors, buffer_handle_t *pHandle, bool *shared_backend,
+                                 int fd)
 {
 	bool shared = false;
 	uint64_t backing_store_id = 0x0;
@@ -1022,7 +1023,7 @@ int mali_gralloc_buffer_allocate(const gralloc_buffer_descriptor_t *descriptors,
 	}
 
 	/* Allocate ION backing store memory */
-	err = mali_gralloc_ion_allocate(descriptors, numDescriptors, pHandle, &shared);
+	err = mali_gralloc_ion_allocate(descriptors, numDescriptors, pHandle, &shared, fd);
 	if (err < 0)
 	{
 		return err;
