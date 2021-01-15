@@ -90,6 +90,8 @@ public:
 		};
 	};
 
+	uint32_t offsets[3];
+
 	union
 	{
 		uint32_t format;
