@@ -214,7 +214,7 @@ void VendorGraphicBufferMeta::init(const buffer_handle_t handle)
 		}
 	}
 
-	internal_format = gralloc_hnd->alloc_format & MALI_GRALLOC_INTFMT_FMT_MASK;
+	internal_format = gralloc_hnd->alloc_format;
 	frameworkFormat = gralloc_hnd->req_format;
 
 	width  = gralloc_hnd->width;
