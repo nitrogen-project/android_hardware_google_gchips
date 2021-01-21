@@ -78,6 +78,10 @@ typedef enum
 
 	GRALLOC_USAGE_ROIINFO                                  = GRALLOC_USAGE_PRIVATE_15,
 
+	/* Google specific usages */
+	GRALLOC_USAGE_GOOGLE_IP_BO                             = GRALLOC_USAGE_PRIVATE_16,
+	GRALLOC_USAGE_GOOGLE_IP_MFC                            = GRALLOC_USAGE_PRIVATE_17,
+
 } mali_gralloc_usage_type;
 
 #define GRALLOC_USAGE_SW_WRITE_RARELY static_cast<uint64_t>(hidl_common::BufferUsage::CPU_WRITE_RARELY)
@@ -133,6 +137,10 @@ static const uint64_t VALID_USAGE =
      * are mapped to the same value (1U << 23). */
     GRALLOC_USAGE_SENSOR_DIRECT_DATA |      /* 1U << 23 */
     GRALLOC_USAGE_GPU_DATA_BUFFER |         /* 1U << 24 */
+
+    /* Google specific usages */
+    GRALLOC_USAGE_GOOGLE_IP_BO |            /* 1U << 51 */
+    GRALLOC_USAGE_GOOGLE_IP_MFC |           /* 1U << 50 */
 
     GRALLOC_USAGE_ROIINFO |                 /* 1U << 52 */
     MALI_GRALLOC_USAGE_AFBC_PADDING |       /* 1U << 53 */
