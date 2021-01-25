@@ -35,6 +35,8 @@ mali_gralloc_format_caps dpu_runtime_caps;
 mali_gralloc_format_caps vpu_runtime_caps;
 mali_gralloc_format_caps gpu_runtime_caps;
 mali_gralloc_format_caps cam_runtime_caps;
+mali_gralloc_format_caps bo_runtime_caps;
+mali_gralloc_format_caps mfc_runtime_caps;
 
 void get_ip_capabilities(void)
 {
@@ -49,12 +51,6 @@ void get_ip_capabilities(void)
 	}
 
 	sanitize_formats();
-
-	memset((void *)&cpu_runtime_caps, 0, sizeof(cpu_runtime_caps));
-	memset((void *)&dpu_runtime_caps, 0, sizeof(dpu_runtime_caps));
-	memset((void *)&vpu_runtime_caps, 0, sizeof(vpu_runtime_caps));
-	memset((void *)&gpu_runtime_caps, 0, sizeof(gpu_runtime_caps));
-	memset((void *)&cam_runtime_caps, 0, sizeof(cam_runtime_caps));
 
 	/* Determine CPU IP capabilities */
 	cpu_runtime_caps.caps_mask |= MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT;
@@ -95,6 +91,14 @@ void get_ip_capabilities(void)
 #endif
 #endif /* defined(MALI_GPU_SUPPORT_AFBC_BASIC) && (MALI_GPU_SUPPORT_AFBC_BASIC == 1) */
 
+	/* Determine BIGOCEAN IP capabilities */
+	bo_runtime_caps.caps_mask |= MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT;
+	bo_runtime_caps.caps_mask |= MALI_GRALLOC_FORMAT_CAPABILITY_AFBC_BASIC;
+	bo_runtime_caps.caps_mask |= MALI_GRALLOC_FORMAT_CAPABILITY_AFBC_YUV_WRITE;
+
+	/* Determine MFC IP capabilities */
+	mfc_runtime_caps.caps_mask |= MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT;
+
 	/* Determine VPU IP capabilities */
 	vpu_runtime_caps.caps_mask |= MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT;
 	vpu_runtime_caps.caps_mask |= MALI_GRALLOC_FORMAT_CAPABILITY_AFBC_BASIC;
@@ -119,6 +123,8 @@ already_init:
 	MALI_GRALLOC_LOGV("DPU format capabilities 0x%" PRIx64, dpu_runtime_caps.caps_mask);
 	MALI_GRALLOC_LOGV("VPU format capabilities 0x%" PRIx64, vpu_runtime_caps.caps_mask);
 	MALI_GRALLOC_LOGV("CAM format capabilities 0x%" PRIx64, cam_runtime_caps.caps_mask);
+	MALI_GRALLOC_LOGV("BO format capabilities 0x%" PRIx64, bo_runtime_caps.caps_mask);
+	MALI_GRALLOC_LOGV("MFC format capabilities 0x%" PRIx64, mfc_runtime_caps.caps_mask);
 }
 
 

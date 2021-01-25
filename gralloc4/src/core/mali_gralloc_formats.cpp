@@ -273,6 +273,18 @@ static uint64_t get_consumer_caps(const uint16_t consumers)
 		consumer_caps &= vpu_runtime_caps.caps_mask;
 	}
 
+	if (consumers & GOOGLE_GRALLOC_CONSUMER_BO &&
+	    bo_runtime_caps.caps_mask & MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT)
+	{
+		consumer_caps &= bo_runtime_caps.caps_mask;
+	}
+
+	if (consumers & GOOGLE_GRALLOC_CONSUMER_MFC &&
+	    mfc_runtime_caps.caps_mask & MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT)
+	{
+		consumer_caps &= mfc_runtime_caps.caps_mask;
+	}
+
 	/* TODO: if consumers is 0, set consumer_caps to 0 as well */
 
 	return consumer_caps;
@@ -333,6 +345,18 @@ static uint64_t get_producer_caps(const uint16_t producers)
 	    vpu_runtime_caps.caps_mask & MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT)
 	{
 		producer_caps &= vpu_runtime_caps.caps_mask;
+	}
+
+	if (producers & GOOGLE_GRALLOC_PRODUCER_BO &&
+	    bo_runtime_caps.caps_mask & MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT)
+	{
+		producer_caps &= bo_runtime_caps.caps_mask;
+	}
+
+	if (producers & GOOGLE_GRALLOC_PRODUCER_MFC &&
+	    mfc_runtime_caps.caps_mask & MALI_GRALLOC_FORMAT_CAPABILITY_OPTIONS_PRESENT)
+	{
+		producer_caps &= mfc_runtime_caps.caps_mask;
 	}
 
 	return producer_caps;
