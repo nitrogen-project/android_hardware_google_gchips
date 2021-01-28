@@ -5,6 +5,7 @@
 #include "core/format_info.h"
 #include "core/mali_gralloc_bufferdescriptor.h"
 #include "core/mali_gralloc_bufferallocation.h"
+#include "core/mali_gralloc_reference.h"
 #include "allocator/mali_gralloc_ion.h"
 #include "hidl_common/SharedMetadata.h"
 #include "gralloc_priv.h"
@@ -186,4 +187,23 @@ buffer_handle_t createNativeHandle(const Descriptor &descriptor) {
 
     return tmp_buffer;
 }
+
+android::hardware::graphics::mapper::V4_0::Error retain(buffer_handle_t handle) {
+    int err = mali_gralloc_reference_retain(handle);
+    if (err == -EINVAL) {
+        return android::hardware::graphics::mapper::V4_0::Error::BAD_BUFFER;
+    } else if (err) {
+        return android::hardware::graphics::mapper::V4_0::Error::NO_RESOURCES;
+    }
+    return android::hardware::graphics::mapper::V4_0::Error::NONE;
+}
+
+android::hardware::graphics::mapper::V4_0::Error release(buffer_handle_t handle) {
+    int err = mali_gralloc_reference_release(handle, true);
+    if (err) {
+        return android::hardware::graphics::mapper::V4_0::Error::BAD_BUFFER;
+    }
+    return android::hardware::graphics::mapper::V4_0::Error::NONE;
+}
+
 }  // namespace android::hardware::graphics::allocator::priv
