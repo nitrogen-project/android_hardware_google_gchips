@@ -6,6 +6,8 @@
 #include "core/mali_gralloc_bufferdescriptor.h"
 #include "core/mali_gralloc_bufferallocation.h"
 #include "allocator/mali_gralloc_ion.h"
+#include "hidl_common/SharedMetadata.h"
+#include "gralloc_priv.h"
 
 namespace android::hardware::graphics::allocator::priv {
 
@@ -126,18 +128,61 @@ buffer_handle_t createNativeHandle(const Descriptor &descriptor) {
         reinterpret_cast<const gralloc_buffer_descriptor_t>(&buffer_descriptor);
 
     buffer_handle_t tmp_buffer;
-    bool shared;
+    bool shared_backend;
     // TODO(modan@, make mali_gralloc_ion_allocate accept multiple fds)
-    int allocResult = mali_gralloc_ion_allocate(&gralloc_buffer_descriptor, 1, &tmp_buffer, &shared);
-    if (allocResult < 0) {
-        ALOGE("mali_gralloc_ion_allocate failed");
-        return nullptr;
+    {
+        int result = mali_gralloc_buffer_allocate(&gralloc_buffer_descriptor, 1, &tmp_buffer,
+            &shared_backend, descriptor.planes[0].fd);
+        if (result < 0) {
+            ALOGE("mali_gralloc_buffer_allocate failed");
+            return nullptr;
+        }
     }
 
-    private_handle_t *private_handle = const_cast<private_handle_t *>(
+    private_handle_t *hnd = const_cast<private_handle_t *>(
         static_cast<const private_handle_t *>(tmp_buffer));
+
+    hnd->imapper_version = HIDL_MAPPER_VERSION_SCALED;
+
+    hnd->reserved_region_size = buffer_descriptor.reserved_size;
+    hnd->attr_size = arm::mapper::common::shared_metadata_size() + hnd->reserved_region_size;
+
+    {
+        int result = mali_gralloc_ion_allocate_attr(hnd);
+        if (result < 0) {
+            ALOGE("mali_gralloc_ion_allocate_attr failed");
+            mali_gralloc_buffer_free(tmp_buffer);
+            return nullptr;
+        }
+    }
+
+    {
+        hnd->attr_base = mmap(nullptr, hnd->attr_size, PROT_READ | PROT_WRITE,
+                MAP_SHARED, hnd->get_share_attr_fd(), 0);
+        if (hnd->attr_base == MAP_FAILED) {
+            ALOGE("mmap hnd->get_share_attr_fd() failed");
+            mali_gralloc_buffer_free(tmp_buffer);
+            return nullptr;
+        }
+
+        memset(hnd->attr_base, 0, hnd->attr_size);
+
+        arm::mapper::common::shared_metadata_init(hnd->attr_base, buffer_descriptor.name);
+
+        const uint32_t base_format = buffer_descriptor.alloc_format & MALI_GRALLOC_INTFMT_FMT_MASK;
+        const uint64_t usage = buffer_descriptor.consumer_usage | buffer_descriptor.producer_usage;
+        android_dataspace_t dataspace;
+        get_format_dataspace(base_format, usage, hnd->width, hnd->height, &dataspace);
+
+        arm::mapper::common::set_dataspace(hnd, static_cast<arm::mapper::common::Dataspace>(dataspace));
+
+        munmap(hnd->attr_base, hnd->attr_size);
+        hnd->attr_base = 0;
+    }
+
     // TODO(modan@, handle all plane offsets)
-    private_handle->offset = private_handle->plane_info[0].offset = descriptor.planes[0].offset;
+    hnd->offset = hnd->plane_info[0].offset = descriptor.planes[0].offset;
+    hnd->layer_count = 1;
 
     return tmp_buffer;
 }
