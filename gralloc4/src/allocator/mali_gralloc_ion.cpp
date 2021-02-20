@@ -175,21 +175,10 @@ static void set_ion_flags(uint64_t usage, unsigned int *ion_flags)
 		*ion_flags |= ION_FLAG_CACHED;
 	}
 
-	/* TODO: does not seem to be used anymore. But check again to make sure */
-#ifdef GRALLOC_PROTECTED_ION_FLAG_FOR_CAMERA_RESERVED
-	if (usage & GRALLOC_USAGE_CAMERA_RESERVED)
+	// DRM or Secure Camera
+	if (usage & (GRALLOC_USAGE_PROTECTED))
 	{
 		*ion_flags |= ION_FLAG_PROTECTED;
-	}
-#endif
-	// DRM or Secure Camera
-	if (usage & (GRALLOC_USAGE_PROTECTED | GRALLOC_USAGE_SECURE_CAMERA_RESERVED))
-	{
-		/* W/A to Android R Camera vts_r5. (W/A requested by Visual S/W group MCD) */
-		if(!(usage & GRALLOC_USAGE_CAMERA_RESERVED))
-		{
-			*ion_flags |= ION_FLAG_PROTECTED;
-		}
 	}
 
 	/* TODO: used for exynos3830. Add this as an option to Android.bp */
@@ -215,15 +204,6 @@ static unsigned int select_heap_mask(uint64_t usage)
 		{
 			heap_mask = EXYNOS_ION_HEAP_SYSTEM_MASK;
 		}
-		else if (usage & GRALLOC_USAGE_CAMERA_RESERVED)
-		{
-			/* W/A to Android R Camera vts_r5. (W/A requested by Visual S/W group MCD) */
-			heap_mask = EXYNOS_ION_HEAP_SYSTEM_MASK;
-		}
-		else if (usage & GRALLOC_USAGE_SECURE_CAMERA_RESERVED)
-		{
-			heap_mask = EXYNOS_ION_HEAP_SECURE_CAMERA_MASK;
-		}
 		else if ((usage & GRALLOC_USAGE_HW_COMPOSER) &&
 			!(usage & GRALLOC_USAGE_HW_TEXTURE) &&
 			!(usage & GRALLOC_USAGE_HW_RENDER))
@@ -242,14 +222,6 @@ static unsigned int select_heap_mask(uint64_t usage)
 		heap_mask = EXYNOS_ION_HEAP_EXT_UI_MASK;
 	}
 #endif
-	else if (usage & GRALLOC_USAGE_CAMERA_RESERVED)
-	{
-		heap_mask = EXYNOS_ION_HEAP_CAMERA_MASK;
-	}
-	else if (usage & GRALLOC_USAGE_SECURE_CAMERA_RESERVED)
-	{
-		heap_mask = EXYNOS_ION_HEAP_SECURE_CAMERA_MASK;
-	}
 	else
 	{
 		heap_mask = EXYNOS_ION_HEAP_SYSTEM_MASK;
@@ -708,7 +680,7 @@ int mali_gralloc_ion_map(private_handle_t *hnd)
 	uint64_t usage = hnd->producer_usage | hnd->consumer_usage;
 
 	/* Do not allow cpu access to secure buffers */
-	if (usage & (GRALLOC_USAGE_PROTECTED | GRALLOC_USAGE_NOZEROED | GRALLOC_USAGE_SECURE_CAMERA_RESERVED)
+	if (usage & (GRALLOC_USAGE_PROTECTED | GRALLOC_USAGE_NOZEROED)
 			&& !(usage & GRALLOC_USAGE_PRIVATE_NONSECURE))
 	{
 		return 0;
