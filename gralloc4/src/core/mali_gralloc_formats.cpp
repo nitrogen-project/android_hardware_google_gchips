@@ -431,9 +431,9 @@ void mali_gralloc_adjust_dimensions(const uint64_t alloc_format,
 		}
 	}
 
-	MALI_GRALLOC_LOGV("%s: alloc_format=0x%" PRIx64 " usage=0x%" PRIx64
-	      " alloc_width=%u, alloc_height=%u",
-	      __FUNCTION__, alloc_format, usage, *width, *height);
+	MALI_GRALLOC_LOGV("%s: alloc_format=0x%" PRIx64 " usage=(%s 0x%" PRIx64
+	      ") alloc_width=%u, alloc_height=%u",
+	      __FUNCTION__, alloc_format, describe_usage(usage).c_str(), usage, *width, *height);
 }
 
 
@@ -1461,7 +1461,7 @@ uint64_t mali_gralloc_select_format(const uint64_t req_format,
 	/* Reject if usage specified is outside white list of valid usages. */
 	if (type != MALI_GRALLOC_FORMAT_TYPE_INTERNAL && (usage & (~VALID_USAGE)) != 0)
 	{
-		MALI_GRALLOC_LOGE("Invalid usage specified: 0x%" PRIx64, usage);
+		MALI_GRALLOC_LOGE("Invalid usage specified: %s 0x%" PRIx64, describe_usage(usage).c_str(), usage);
 	}
 
 	/* TODO: Make a function for finding formats that should be allocated as the request format */
@@ -1540,9 +1540,9 @@ uint64_t mali_gralloc_select_format(const uint64_t req_format,
 	}
 
 out:
-	MALI_GRALLOC_LOGV("mali_gralloc_select_format: req_format=0x%08" PRIx64 ", usage=0x%" PRIx64
-	      ", req_base_format=0x%" PRIx32 ", alloc_format=0x%" PRIx64,
-	      req_format, usage, req_base_format, alloc_format);
+	MALI_GRALLOC_LOGV("mali_gralloc_select_format: req_format=0x%08" PRIx64 ", usage=(%s 0x%" PRIx64
+	      "), req_base_format=0x%" PRIx32 ", alloc_format=0x%" PRIx64,
+	      req_format, describe_usage(usage).c_str(), usage, req_base_format, alloc_format);
 
 	return alloc_format;
 }
