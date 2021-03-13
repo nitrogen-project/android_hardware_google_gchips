@@ -41,6 +41,7 @@
 #include "gralloc_helper.h"
 #include "mali_gralloc_formats.h"
 #include "mali_gralloc_usages.h"
+#include "core/format_info.h"
 #include "core/mali_gralloc_bufferdescriptor.h"
 #include "core/mali_gralloc_bufferallocation.h"
 
@@ -785,8 +786,8 @@ int import_exynos_ion_handles(private_handle_t *hnd)
 			retval = exynos_ion_import_handle(dev->client(), hnd->fds[idx], &hnd->ion_handles[idx]);
 			if (retval)
 			{
-				MALI_GRALLOC_LOGE("error importing ion_handle. ion_client(%d), ion_handle[%d](%d) format(%#" PRIx64 ")",
-				     dev->client(), idx, hnd->ion_handles[idx], hnd->alloc_format);
+				MALI_GRALLOC_LOGE("error importing ion_handle. ion_client(%d), ion_handle[%d](%d) format(%s %#" PRIx64 ")",
+				     dev->client(), idx, hnd->ion_handles[idx], format_name(hnd->alloc_format), hnd->alloc_format);
 				goto error;
 			}
 		}
@@ -817,8 +818,8 @@ void free_exynos_ion_handles(private_handle_t *hnd)
 			if (hnd->ion_handles[idx] &&
 			    exynos_ion_free_handle(dev->client(), hnd->ion_handles[idx]))
 			{
-				MALI_GRALLOC_LOGE("error freeing ion_handle. ion_client(%d), ion_handle[%d](%d) format(%#" PRIx64 ")",
-				     dev->client(), idx, hnd->ion_handles[idx], hnd->alloc_format);
+				MALI_GRALLOC_LOGE("error freeing ion_handle. ion_client(%d), ion_handle[%d](%d) format(%s %#" PRIx64 ")",
+					dev->client(), idx, hnd->ion_handles[idx], format_name(hnd->alloc_format), hnd->alloc_format);
 			}
 		}
 	}
