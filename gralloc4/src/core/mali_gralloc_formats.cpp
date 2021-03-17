@@ -1406,10 +1406,6 @@ uint32_t get_base_format(const uint64_t req_format,
 		if (usage & (GRALLOC_USAGE_HW_VIDEO_ENCODER | GRALLOC_USAGE_HW_VIDEO_DECODER))
 		{
 			base_format = HAL_PIXEL_FORMAT_EXYNOS_YCbCr_420_SP_M;
-			if (usage & (GRALLOC_USAGE_SBWC_REQUEST_10BIT))
-			{
-				base_format = HAL_PIXEL_FORMAT_EXYNOS_YCbCr_P010_M;
-			}
 		}
 		else if (usage & (GRALLOC_USAGE_HW_RENDER | GRALLOC_USAGE_HW_TEXTURE))
 		{

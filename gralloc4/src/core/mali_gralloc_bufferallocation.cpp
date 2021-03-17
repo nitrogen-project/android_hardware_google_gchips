@@ -969,7 +969,7 @@ int mali_gralloc_derive_format_and_size(buffer_descriptor_t * const bufDescripto
 	 * AFBC specification v3.4, section 2.15: "Alignment requirements").
 	 * Also update the buffer size to accommodate all layers.
 	 */
-	if (bufDescriptor->layer_count > 1 && ~usage & GRALLOC_USAGE_HFR_MODE)
+	if (bufDescriptor->layer_count > 1)
 	{
 		if (bufDescriptor->alloc_format & MALI_GRALLOC_INTFMT_AFBCENABLE_MASK)
 		{
