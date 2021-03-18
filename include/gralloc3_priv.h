@@ -29,7 +29,6 @@
 #define AFBC_ENABLE                                 (0xafbc)
 
 /* Exynos specific usages */
-#define GRALLOC1_PRODUCER_USAGE_PROTECTED_DPB                   GRALLOC1_PRODUCER_USAGE_PRIVATE_0
 #define GRALLOC1_PRODUCER_USAGE_PRIVATE_NONSECURE               GRALLOC1_PRODUCER_USAGE_PRIVATE_8
 #define GRALLOC1_PRODUCER_USAGE_NOZEROED                        GRALLOC1_PRODUCER_USAGE_PRIVATE_9
 

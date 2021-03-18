@@ -39,7 +39,6 @@ typedef android::hardware::graphics::common::V1_2::BufferUsage BufferUsage;
 
 enum VendorGraphicBufferUsage {
 /* S.LSI specific usages */
-	PROTECTED_DPB                   = 1ULL << 28,
 	NO_AFBC                         = 1ULL << 29,
 	ROIINFO                         = 1ULL << 52,
 	AFBC_PADDING                    = 1ULL << 53,
