@@ -47,7 +47,6 @@ enum VendorGraphicBufferUsage {
 	NOZEROED                        = 1ULL << 58,
 	PRIVATE_NONSECURE               = 1ULL << 59,
 	VIDEO_PRIVATE_DATA              = 1ULL << 60,
-	YUV_RANGE_FULL                  = 1ULL << 63,
 /* Google-specific usages */
 	CAMERA_STATS                    = 1ULL << 30,
 	TPU_OUTPUT                      = 1ULL << 31,

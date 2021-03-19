@@ -66,7 +66,6 @@ typedef enum
 	GRALLOC_USAGE_PRIVATE_NONSECURE                        = GRALLOC_USAGE_PRIVATE_8,
 	GRALLOC_USAGE_NOZEROED                                 = GRALLOC_USAGE_PRIVATE_9,
 
-	GRALLOC_USAGE_YUV_RANGE_FULL                           = GRALLOC_USAGE_PRIVATE_4,
 	GRALLOC_USAGE_VIDEO_PRIVATE_DATA                       = GRALLOC_USAGE_PRIVATE_7,
 
 	GRALLOC_USAGE_ROIINFO                                  = GRALLOC_USAGE_PRIVATE_15,

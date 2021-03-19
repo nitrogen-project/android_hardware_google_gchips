@@ -157,7 +157,6 @@ enum VendorGraphicBufferUsage {
         NOZEROED                        = 1ULL << 58,
         PRIVATE_NONSECURE               = 1ULL << 59,
         VIDEO_PRIVATE_DATA              = 1ULL << 60,
-        YUV_RANGE_FULL                  = 1ULL << 63,
 };
 
     Instead of using GRALLOC1_PRODUCER_USAGE_NO_AFBC,
