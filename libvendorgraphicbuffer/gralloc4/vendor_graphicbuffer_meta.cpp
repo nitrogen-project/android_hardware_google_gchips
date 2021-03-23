@@ -20,7 +20,7 @@
 #include "VendorGraphicBuffer.h"
 #include "mali_gralloc_buffer.h"
 #include "mali_gralloc_formats.h"
-#include "hidl_common/SharedMetadata_struct.h"
+#include "hidl_common/SharedMetadata.h"
 
 using namespace android;
 using namespace vendor::graphics;
@@ -66,6 +66,18 @@ int VendorGraphicBufferMeta::get_dataspace(buffer_handle_t hnd)
 	munmap(metadata, sizeof(shared_metadata));
 
 	return ret;
+}
+
+int VendorGraphicBufferMeta::set_dataspace(buffer_handle_t hnd, android_dataspace_t dataspace)
+{
+	const private_handle_t *gralloc_hnd = static_cast<const private_handle_t *>(hnd);
+
+	if (!gralloc_hnd)
+		return -1;
+
+	arm::mapper::common::set_dataspace(gralloc_hnd, static_cast<Dataspace>(dataspace));
+
+	return 0;
 }
 
 int VendorGraphicBufferMeta::is_afbc(buffer_handle_t hnd)
