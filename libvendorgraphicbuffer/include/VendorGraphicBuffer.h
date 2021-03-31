@@ -134,6 +134,7 @@ public:
 
 	static uint64_t get_usage(buffer_handle_t);
 	static int is_afbc(buffer_handle_t);
+	static int is_sbwc(buffer_handle_t);
 	static void* get_video_metadata(buffer_handle_t);
 
 	/* get_video_metadata_roiinfo is only supported with gralloc4
