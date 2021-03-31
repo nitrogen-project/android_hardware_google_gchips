@@ -84,6 +84,31 @@ int VendorGraphicBufferMeta::get_dataspace(buffer_handle_t hnd)
 	return dataspace;
 }
 
+int VendorGraphicBufferMeta::set_dataspace(buffer_handle_t hnd, android_dataspace_t dataspace)
+{
+	const private_handle_t *gralloc_hnd = static_cast<const private_handle_t *>(hnd);
+
+	if (!gralloc_hnd)
+		return -1;
+
+	int attr_fd = gralloc_hnd->get_share_attr_fd();
+
+	if (attr_fd <0)
+		return -1;
+
+	attr_region* region = (attr_region*)mmap(NULL, sizeof(attr_region), PROT_READ | PROT_WRITE, MAP_SHARED, attr_fd, 0);
+	if (region == NULL)
+		return -1;
+	else if (region == MAP_FAILED)
+		return -1;
+
+	region->dataspace = dataspace;
+	region->force_dataspace = dataspace;
+	munmap(region, sizeof(attr_region));
+
+	return 0;
+}
+
 int VendorGraphicBufferMeta::get_fd(buffer_handle_t hnd, int num)
 {
 	const private_handle_t *gralloc_hnd = static_cast<const private_handle_t *>(hnd);
