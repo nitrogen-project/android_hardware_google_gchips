@@ -23,6 +23,8 @@
 #include "allocator/mali_gralloc_shared_memory.h"
 #include "mali_gralloc_bufferallocation.h"
 #include "mali_gralloc_debug.h"
+#include "mali_gralloc_reference.h"
+#include "mali_gralloc_usages.h"
 
 static pthread_mutex_t s_map_lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -36,6 +38,7 @@ int mali_gralloc_reference_retain(buffer_handle_t handle)
 
 	private_handle_t *hnd = (private_handle_t *)handle;
 	pthread_mutex_lock(&s_map_lock);
+	int retval = 0;
 
 	if (hnd->allocating_pid == getpid() || hnd->remote_pid == getpid())
 	{
@@ -54,7 +57,19 @@ int mali_gralloc_reference_retain(buffer_handle_t handle)
 
 	pthread_mutex_unlock(&s_map_lock);
 
-	return 0;
+	// TODO(b/187145254): CPU_READ/WRITE buffer is not being properly locked from
+	// MFC. This is a WA for the time being.
+	constexpr auto cpu_access_usage = (
+			GRALLOC_USAGE_SW_WRITE_OFTEN |
+			GRALLOC_USAGE_SW_READ_OFTEN |
+			GRALLOC_USAGE_SW_WRITE_RARELY |
+			GRALLOC_USAGE_SW_READ_RARELY
+	);
+
+	if (hnd->get_usage() & cpu_access_usage)
+		retval = mali_gralloc_reference_map(handle);
+
+	return retval;
 }
 
 int mali_gralloc_reference_map(buffer_handle_t handle) {
