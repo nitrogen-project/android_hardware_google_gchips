@@ -32,7 +32,19 @@ using aidl::android::hardware::graphics::common::Dataspace;
 #define UNUSED(x) ((void)x)
 #define SZ_4k 0x1000
 
-extern int mali_gralloc_reference_validate(buffer_handle_t handle);
+// TODO(b/191912915): This is a non-thread safe version of the validate function
+// from mapper-4.0-impl library. Ideally this should be decoupled from `impl`
+// libraries and should depend upon HAL (and it's extension) to call into
+// Gralloc.
+int mali_gralloc_reference_validate(buffer_handle_t handle) {
+  auto hnd = static_cast<const private_handle_t *>(handle);
+
+  if (hnd->allocating_pid != getpid() && hnd->remote_pid != getpid()) {
+    return -EINVAL;
+  }
+
+  return 0;
+}
 
 const private_handle_t * convertNativeHandleToPrivateHandle(buffer_handle_t handle) {
 	if (mali_gralloc_reference_validate(handle) < 0)
